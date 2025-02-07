@@ -17,11 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: pnpm install
-
-      # Step 4: Deploy using Rsync
+      # Step 2: Deploy using Rsync
       - name: Deploy using Rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
@@ -32,7 +28,7 @@ jobs:
           remote_user: root
           remote_key: ${{ secrets.DEV_DEPLOYMENT_KEY }}
 
-      # Step 5: SSH into Server and Start Application with PM2
+      # Step 3: SSH into Server and Start Application with PM2
       - name: Start Application with PM2
         uses: appleboy/ssh-action@v1.1.0
         with:
