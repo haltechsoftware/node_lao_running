@@ -23,11 +23,9 @@ jobs:
         with:
           node-version: '20'
 
-      # Step 3: Install pnpm using corepack
-      - name: Install pnpm using corepack
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
+      # Step 3: Install pnpm
+      - name: Install pnpm
+        run: npm i pnpm -g
 
       # Step 4: Verify pnpm installation
       - name: Verify pnpm installation
