@@ -1,6 +1,6 @@
 {
   "name": "auto-install",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "server.js",
   "dependencies": {
     "@babel/runtime": "^7.15.3",
