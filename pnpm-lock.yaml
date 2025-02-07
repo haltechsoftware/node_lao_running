@@ -72,7 +72,7 @@ importers:
         specifier: ^6.6.5
         version: 6.37.5(mysql2@2.3.3)
       sharp:
-        specifier: ^0.29.0
+        specifier: ^0.29.3
         version: 0.29.3
     devDependencies:
       '@babel/core':
@@ -2025,6 +2025,7 @@ packages:
 
   pubnub@4.37.0:
     resolution: {integrity: sha512-NyVViKkjHZL5AC59wBXfF4QWTe38b7VaESitRIsd5mA7/B7aVuyu752lqfa5P0qjnVnRSw/+fxqDykeL/jmz1Q==}
+    bundledDependencies: []
 
   pump@3.0.2:
     resolution: {integrity: sha512-tUPXtzlGM8FE3P0ZL6DVs/3P58k9nk8/jZeQCurTJylQA8qFYzHFfhBJkuqyE0FifOsQ0uKWekiZ5g8wtr28cw==}
