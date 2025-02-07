@@ -17,54 +17,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      # Step 3: Install pnpm
-      - name: Install pnpm
-        run: npm i pnpm -g
-
-      # Step 4: Verify pnpm installation
-      - name: Verify pnpm installation
-        run: pnpm --version
-
-      # Step 5: Create or Update .env file with environment variables
-      - name: Create .env file
-        run: |
-          echo "NODE_ENV=production" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "F_ISS=${{ secrets.F_ISS }}" >> .env
-          echo "CLOUDINARY_NAME=${{ secrets.CLOUDINARY_NAME }}" >> .env
-          echo "CLOUDINARY_KEY=${{ secrets.CLOUDINARY_KEY }}" >> .env
-          echo "CLOUDINARY_SECRET=${{ secrets.CLOUDINARY_SECRET }}" >> .env
-          echo "DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}" >> .env
-          echo "DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}" >> .env
-          echo "DEV_DB_NAME=${{ secrets.DEV_DB_NAME }}" >> .env
-          echo "DEV_DB_HOST=${{ secrets.DEV_DB_HOST }}" >> .env
-
-      # Step 6: Install dependencies
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: pnpm install
 
-      # Step 7: Build the project
-      - name: Build the project
-        run: pnpm build
-
-      # Step 8: Deploy using Rsync
+      # Step 4: Deploy using Rsync
       - name: Deploy using Rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
           switches: -avzr --delete --exclude="/assets" --exclude="/storage"
           path: './'
-          remote_path: '/var/www/fhir-integration'
+          remote_path: '/var/www/api'
           remote_host: ${{ secrets.DEV_HOST }}
           remote_user: root
           remote_key: ${{ secrets.DEV_DEPLOYMENT_KEY }}
 
-      # Step 9: SSH into Server and Start Application with PM2
+      # Step 5: SSH into Server and Start Application with PM2
       - name: Start Application with PM2
         uses: appleboy/ssh-action@v1.1.0
         with:
@@ -72,6 +40,17 @@ jobs:
           username: root
           key: ${{ secrets.DEV_DEPLOYMENT_KEY }}
           script: |
-            cd /var/www/fhir-integration
+            cd /var/www/api
+            echo "NODE_ENV=production" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "F_ISS=${{ secrets.F_ISS }}" >> .env
+            echo "CLOUDINARY_NAME=${{ secrets.CLOUDINARY_NAME }}" >> .env
+            echo "CLOUDINARY_KEY=${{ secrets.CLOUDINARY_KEY }}" >> .env
+            echo "CLOUDINARY_SECRET=${{ secrets.CLOUDINARY_SECRET }}" >> .env
+            echo "DEV_DB_USERNAME=${{ secrets.DEV_DB_USERNAME }}" >> .env
+            echo "DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}" >> .env
+            echo "DEV_DB_NAME=${{ secrets.DEV_DB_NAME }}" >> .env
+            echo "DEV_DB_HOST=${{ secrets.DEV_DB_HOST }}" >> .env
+            npm i pnpm -g
             pnpm i
-            pm2 restart "fhir-integration" || pm2 start npm --name "fhir-integration" -- run start:prod
+            pm2 restart "api" || pm2 start npm --name "api" -- run start:prod
