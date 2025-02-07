@@ -37,7 +37,7 @@ jobs:
           key: ${{ secrets.DEV_DEPLOYMENT_KEY }}
           script: |
             cd /var/www/api
-            echo "NODE_ENV=production" >> .env
+            echo "NODE_ENV=development" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
             echo "F_ISS=${{ secrets.F_ISS }}" >> .env
             echo "CLOUDINARY_NAME=${{ secrets.CLOUDINARY_NAME }}" >> .env
