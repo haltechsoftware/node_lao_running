@@ -47,6 +47,5 @@ jobs:
             echo "DEV_DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}" >> .env
             echo "DEV_DB_NAME=${{ secrets.DEV_DB_NAME }}" >> .env
             echo "DEV_DB_HOST=${{ secrets.DEV_DB_HOST }}" >> .env
-            npm i pnpm -g
-            pnpm i
+            npm i
             pm2 restart "api" || pm2 start npm --name "api" -- run start
