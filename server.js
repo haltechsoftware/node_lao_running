@@ -8,7 +8,7 @@ const { ValidationError } = require('express-validation')
 const app = express();
 
 const corsOptions = {
-  origin: ["*"]
+  origin: ["http://localhost:8080", "http://146.190.81.44", "http://146.190.81.44:3000"]
 };
 
 app.use(cors(corsOptions));
