@@ -12,7 +12,7 @@ module.exports = app => {
   router.post("/", auth, role.hasRole('User'), upload.single('image'), run_result.create);
 
   // Retrieve all run_results
-  router.get("/", run_result.findAll);
+  router.get("/", auth, run_result.findAll);
 
   // Retrieve a single run_result with id
   router.get("/:id", auth, role.hasRole('User'), run_result.findOne);
