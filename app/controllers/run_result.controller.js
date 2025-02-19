@@ -142,3 +142,19 @@ exports.findOne = async (req, res, next) => {
   }
 
 };
+
+// Update a RunResult by the id in the request
+exports.update = (req, res) => {
+  return Response.success(res, Message.success._success, {
+    id: req.params.id
+  });
+
+};
+
+// Delete a RunResult with the specified id in the request
+exports.delete = (req, res) => {
+  return Response.success(res, Message.success._success, {
+    id: req.params.id
+  });
+
+};
