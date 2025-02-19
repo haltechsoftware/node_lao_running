@@ -47,7 +47,8 @@ import error from "./app/routes/error.routes";
 error(app);
 
 process.on('unhandledRejection', function (err) {
-  console.log('unhandledRejection: ', err);
+  console.error('unhandledRejection: ', err);
+  process.exit(1); // Exit the process to prevent unstable state
 });
 
 app.use((req, res, next) => {
