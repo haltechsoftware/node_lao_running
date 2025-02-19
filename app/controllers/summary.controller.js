@@ -30,7 +30,7 @@ exports.summary = async (req, res, next) => {
       ],
       include: {
         model: db.Package,
-        attributes: ['id', 'name', 'range', 'price']
+        attributes: ['id', 'name', 'price']
       },
       group: ['package_id']
     })
