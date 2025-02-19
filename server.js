@@ -21,6 +21,8 @@ app.use(express.urlencoded({
   extended: true
 }));
 
+import admin from "./app/routes/admin_result.routes";
+admin(app);
 
 import run from "./app/routes/run_result.routes";
 run(app);

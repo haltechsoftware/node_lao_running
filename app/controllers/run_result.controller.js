@@ -158,3 +158,60 @@ exports.delete = (req, res) => {
   });
 
 };
+
+/**
+ * Get all run result
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * 
+ * @returns \app\helpers\response.helper
+ */
+exports.findAllAdmin = async (req, res, next) => {
+  try {
+
+    const per_page = Number.parseInt(req.query.per_page);
+    let page = Number.parseInt(req.query.page);
+    const status = req.query.status;
+    const condition = status ? {
+      status: status
+    } : { };
+    const attribute = ["id", "user_id", "range", "time", "image", "image_id", "status", "reject_description", "createdAt", "updatedAt"];
+
+    if (per_page) {
+      const runResultData = {};
+      page = page && page > 0 ? page : 1;
+
+      const runResult = await db.RunResult.findAndCountAll({
+        where: condition,
+        attributes: attribute,
+        include: {
+          model: db.User,
+          include: {
+            model: db.UserProfile
+          },
+        },
+        limit: per_page,
+        offset: (page - 1) * per_page,
+        subQuery: false
+      });
+
+      runResultData.data = runResult.rows;
+      runResultData.pagination = {
+        total: runResult.count,
+        per_page: per_page,
+        total_pages: Math.ceil(runResult.count / per_page),
+        current_page: page
+      };
+      return Response.success(res, Message.success._success, runResultData);
+    }
+
+    const runResult = await req.auth.getRunResults({
+      where: condition,
+      attributes: attribute
+    });
+    return Response.success(res, Message.success._success, runResult);
+  } catch (error) {
+    next(error);
+  }
+};
