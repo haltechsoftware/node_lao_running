@@ -165,7 +165,6 @@ exports.findOneBranche = async (req, res, next) => {
     const branches = await db.HalBranche.findByPk(id)
     throw new Error('ee')
 
-    return Response.success(res, Message.success._success, branches);
 
   } catch (error) {
     next(error)
@@ -352,7 +351,6 @@ exports.findAllImage = async (req, res, next) => {
       order: [
         ['id', 'DESC']
       ],
-      group: ['user_id'],
     })
     if (per_page) {
       page = page && page > 0 ? page : 1
@@ -367,7 +365,6 @@ exports.findAllImage = async (req, res, next) => {
         order: [
           ['id', 'DESC']
         ],
-        group: ['user_id'],
       })
       runImageData.data = runImages
       runImageData.pagination = {
@@ -385,7 +382,6 @@ exports.findAllImage = async (req, res, next) => {
       order: [
         ['id', 'DESC']
       ],
-      group: ['user_id'],
     })
     return Response.success(res, Message.success._success, runResultData);
   } catch (error) {
