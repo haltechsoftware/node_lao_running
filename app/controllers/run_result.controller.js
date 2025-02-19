@@ -134,7 +134,7 @@ exports.findAll = async (req, res, next) => {
  */
 exports.findOne = async (req, res, next) => {
   try {
-    const runResult = await db.RunResult.findOne(req.params.id);
+    const runResult = await db.RunResult.findByPk(req.params.id);
     return Response.success(res, Message.success._success, runResult);
 
   } catch (error) {
@@ -144,10 +144,13 @@ exports.findOne = async (req, res, next) => {
 };
 
 // Update a RunResult by the id in the request
-exports.update = (req, res) => {
-  return Response.success(res, Message.success._success, {
-    id: req.params.id
-  });
+exports.update = async (req, res) => {
+  const runResult = await db.RunResult.findByPk(req.params.id);
+  runResult.status = req.body.status;
+  
+  await runResult.save();
+
+  return Response.success(res, Message.success._success, runResult);
 
 };
 
