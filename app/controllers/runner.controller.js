@@ -90,13 +90,16 @@ exports.updateUserLocation = async (req, res, next) => {
   try {
     const userProfile = await req.auth.getUserProfile();
 
-    if (!userProfile)
+    if (!userProfile) {
+      await transaction.rollback();
+
       next(
         createError(
           Status.code.NotFound,
           Message.fail._notFound("user_profile"),
         ),
       );
+    }
 
     let hal_branche_id = req.body.hal_branche_id;
     const size = req.body.size;
@@ -107,13 +110,16 @@ exports.updateUserLocation = async (req, res, next) => {
           name: "EVO Store",
         },
       });
-      if (!Evo)
+      if (!Evo) {
+        await transaction.rollback();
+
         next(
           createError(
             Status.code.NotFound,
             Message.fail._notFound("evo_store"),
           ),
         );
+      }
 
       hal_branche_id = Evo.id;
     }
@@ -229,13 +235,16 @@ exports.getBcelQr = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
-    if (!runnerPackage)
+    if (!runnerPackage) {
+      await transaction.rollback();
+
       return next(
         createError(
           Status.code.NotFound,
           Message.fail._notFound("runner_package"),
         ),
       );
+    }
 
     let userPackage = await db.UserPackage.findOne({
       where: {
@@ -334,6 +343,7 @@ exports.payBcelQr = async (req, res, next) => {
       );
     } catch (error) {
       console.log(error);
+      await transaction.rollback();
 
       next(
         createError(
@@ -348,18 +358,26 @@ exports.payBcelQr = async (req, res, next) => {
         user_id: req.user.user_id,
       },
     });
-    if (!payment)
+    if (!payment) {
+      await transaction.rollback();
+
       return next(
         createError(Status.code.NotFound, Message.fail._notFound("payment")),
       );
-    if (payment.status == "success")
-      return next(createError(Status.code.BadRequest, payment));
+    }
+    if (payment.status == "success") {
+      await transaction.rollback();
 
+      return next(createError(Status.code.BadRequest, payment));
+    }
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
-    if (!runnerPackage)
+    if (!runnerPackage) {
+      await transaction.rollback();
+
       return next(
         createError(Status.code.NotFound, Message.fail._notFound("package")),
       );
+    }
 
     const paid = await payment.update(
       {

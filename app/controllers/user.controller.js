@@ -118,17 +118,23 @@ exports.register = async (req, res, next) => {
 
     const decodeData = Otp.verify(id_token);
 
-    if (!decodeData)
+    if (!decodeData) {
+      await transaction.rollback();
+
       return next(
         createError(Status.code.BadRequest, Message.fail._invalidToken),
       );
+    }
 
     const oldUser = await db.User.findOne({ where: { sub: decodeData.sub } });
 
-    if (oldUser)
+    if (oldUser) {
+      await transaction.rollback();
+
       return next(
         createError(Status.code.BadRequest, Message.fail._existPhone),
       );
+    }
 
     const phone = decodeData.phone_number.replace("+85620", "");
 
