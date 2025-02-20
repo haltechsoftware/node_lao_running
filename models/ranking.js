@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Ranking extends Model {
     /**
@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Ranking.belongsTo(models.User, {
-        foreignKey: 'user_id'
-      })
+        foreignKey: "user_id"
+      });
     }
   };
   Ranking.init({
@@ -20,8 +20,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'id'
+        model: "users",
+        key: "id"
       },
     },
     total_range: {
@@ -46,8 +46,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Ranking',
-    tableName: 'rankings',
+    modelName: "Ranking",
+    tableName: "rankings",
   });
   return Ranking;
 };

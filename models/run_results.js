@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 import {
   Model
-} from 'sequelize';
+} from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class RunResult extends Model {
     /**
@@ -11,16 +11,16 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       RunResult.belongsTo(models.User, {
-          onDelete: 'cascade',
-          onUpdate: 'cascade',
-          foreignKey: 'user_id'
+          onDelete: "cascade",
+          onUpdate: "cascade",
+          foreignKey: "user_id"
         }),
         RunResult.belongsTo(models.User, {
-          onDelete: 'cascade',
-          onUpdate: 'cascade',
-          foreignKey: 'approved_by',
+          onDelete: "cascade",
+          onUpdate: "cascade",
+          foreignKey: "approved_by",
           as: "ApproveBy"
-        })
+        });
     }
   };
   RunResult.init({
@@ -34,16 +34,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'id'
+        model: "users",
+        key: "id"
       },
     },
     approved_by: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'users',
-        key: 'id'
+        model: "users",
+        key: "id"
       },
     },
     range: {
@@ -55,9 +55,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     status: {
-      type: DataTypes.ENUM('pending', 'approve', 'reject'),
+      type: DataTypes.ENUM("pending", "approve", "reject"),
       allowNull: false,
-      defaultValue: 'pending'
+      defaultValue: "pending"
     },
     reject_description: {
       type: DataTypes.TEXT,
@@ -83,8 +83,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'RunResult',
-    tableName: 'run_results'
+    modelName: "RunResult",
+    tableName: "run_results"
   });
   return RunResult;
 };

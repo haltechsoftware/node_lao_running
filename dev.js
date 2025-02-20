@@ -1,2 +1,2 @@
-import "@babel/register"
-import "./server"
+import "@babel/register";
+import "./server";

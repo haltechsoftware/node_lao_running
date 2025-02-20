@@ -30,5 +30,5 @@ module.exports = app => {
   // Get all Images.
   router.get("/image/", info.findAllImage);
 
-  app.use('/api/info', router);
-}
+  app.use("/api/info", router);
+};

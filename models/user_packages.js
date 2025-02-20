@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 import {
   Model
-} from 'sequelize';
+} from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class UserPackage extends Model {
     /**
@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       UserPackage.belongsTo(models.User, {
-        foreignKey: 'user_id'
-      })
+        foreignKey: "user_id"
+      });
 
       UserPackage.belongsTo(models.Package, {
-        foreignKey: 'package_id'
-      })
+        foreignKey: "package_id"
+      });
 
 
     }
@@ -32,16 +32,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'id'
+        model: "users",
+        key: "id"
       },
     },
     package_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'packages',
-        key: 'id'
+        model: "packages",
+        key: "id"
       },
     },
     total: {
@@ -50,9 +50,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0
     },
     status: {
-      type: DataTypes.ENUM('pending', 'success'),
+      type: DataTypes.ENUM("pending", "success"),
       allowNull: false,
-      defaultValue: 'pending'
+      defaultValue: "pending"
     },
     invoice_id: {
       type: DataTypes.STRING,
@@ -81,8 +81,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'UserPackage',
-    tableName: 'user_packages',
+    modelName: "UserPackage",
+    tableName: "user_packages",
   });
 
 

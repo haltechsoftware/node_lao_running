@@ -1,13 +1,13 @@
 import db from "../../models";
 const User = db.User;
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import Response from '../helpers/response.helper';
-import Status from '../helpers/status.helper';
-import Message from '../helpers/message.helper';
-import Image from '../helpers/upload.helper'
-import createError from 'http-errors'
-import Otp from '../helpers/otp.helper'
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import Response from "../helpers/response.helper";
+import Status from "../helpers/status.helper";
+import Message from "../helpers/message.helper";
+import Image from "../helpers/upload.helper";
+import createError from "http-errors";
+import Otp from "../helpers/otp.helper";
 import {
   create
 } from "qrcode";
@@ -21,11 +21,11 @@ import {
  * @returns \app\helpers\response.helper
  */
 exports.validateFirst = async (req, res, next) => {
-  let errors = {}
+  let errors = {};
 
   try {
 
-    const { name, surname } = req.body
+    const { name, surname } = req.body;
 
     const user = await db.UserProfile.findOne({
       where: [{
@@ -34,9 +34,9 @@ exports.validateFirst = async (req, res, next) => {
       {
         surname: surname
       }]
-    })
+    });
 
-    if (user) errors.name = Message.validation('exists', '\"name\"')
+    if (user) errors.name = Message.validation("exists", "\"name\"");
 
 
     if (!Object.keys(errors).length)
@@ -52,11 +52,11 @@ exports.validateFirst = async (req, res, next) => {
           errors
         ]
       }
-    )
+    );
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Validate Step 1.
@@ -67,16 +67,16 @@ exports.validateFirst = async (req, res, next) => {
  * @returns \app\helpers\response.helper
  */
 exports.validateSecond = async (req, res, next) => {
-  let errors = {}
+  let errors = {};
 
   try {
-    const email = req.body.email
+    const email = req.body.email;
 
     if (await User.findOne({
       where: {
         email: email,
       }
-    })) errors.email = Message.validation('exists', '\"email\"')
+    })) errors.email = Message.validation("exists", "\"email\"");
 
 
     if (!Object.keys(errors).length)
@@ -92,11 +92,11 @@ exports.validateSecond = async (req, res, next) => {
           errors
         ]
       }
-    )
+    );
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Register User.
@@ -118,17 +118,17 @@ exports.register = async (req, res, next) => {
       gender,
       dob,
       id_token,
-    } = req.body
+    } = req.body;
 
-    const decodeData = Otp.verify(id_token)
+    const decodeData = Otp.verify(id_token);
 
-    if (!decodeData) return next(createError(Status.code.BadRequest, Message.fail._invalidToken))
+    if (!decodeData) return next(createError(Status.code.BadRequest, Message.fail._invalidToken));
 
-    const oldUser = await db.User.findOne({ where: { sub: decodeData.sub } })
+    const oldUser = await db.User.findOne({ where: { sub: decodeData.sub } });
 
-    if (oldUser) return next(createError(Status.code.BadRequest, Message.fail._existPhone))
+    if (oldUser) return next(createError(Status.code.BadRequest, Message.fail._existPhone));
 
-    const phone = decodeData.phone_number.replace('+85620', '')
+    const phone = decodeData.phone_number.replace("+85620", "");
 
     const encryptedPassword = password ? await bcrypt.hash(password, 10) : null;
 
@@ -145,15 +145,15 @@ exports.register = async (req, res, next) => {
 
     const roleUser = await db.Role.findOne({
       where: {
-        name: 'User'
+        name: "User"
       }
-    })
+    });
 
     await user.addRole(roleUser, {
       transaction: transaction
-    })
+    });
 
-    let profile_image = req.file ? await Image.upload(req.file) : null
+    let profile_image = req.file ? await Image.upload(req.file) : null;
 
     await user.createUserProfile({
       name: name,
@@ -161,12 +161,12 @@ exports.register = async (req, res, next) => {
       gender: gender,
       national_id: national_id,
       dob: dob,
-      bib: user.id.toString().padStart(5, '0'),
+      bib: user.id.toString().padStart(5, "0"),
       profile_image: profile_image ? profile_image.secure_url : null,
       profile_image_id: profile_image ? profile_image.public_id : null,
     }, {
       transaction: transaction
-    })
+    });
 
 
 
@@ -179,7 +179,7 @@ exports.register = async (req, res, next) => {
     }
     );
 
-    await transaction.commit()
+    await transaction.commit();
 
     const userData = {
       id: user.id,
@@ -189,16 +189,16 @@ exports.register = async (req, res, next) => {
       phone: user.phone,
       role: await user.getRoles(),
       token: token,
-    }
+    };
 
 
     return Response.success(res, Message.success._success, userData);
 
   } catch (error) {
-    await transaction.rollback()
-    next(error)
+    await transaction.rollback();
+    next(error);
   }
-}
+};
 
 /**
  * Login User.
@@ -210,19 +210,19 @@ exports.register = async (req, res, next) => {
  */
 exports.login = async (req, res, next) => {
   try {
-    const email = req.body.email ? req.body.email : null
-    const password = req.body.password ? req.body.password : null
+    const email = req.body.email ? req.body.email : null;
+    const password = req.body.password ? req.body.password : null;
 
     const condition = isNaN(email)
       ? { email: email }
-      : { phone: email }
+      : { phone: email };
 
     const user = await db.User.findOne({
       where: condition
     });
 
     if (user && (await bcrypt.compare(password, user.password))) {
-      const role = await user.getRoles()
+      const role = await user.getRoles();
       const token = jwt.sign({
         user_id: user.id,
         email,
@@ -240,18 +240,18 @@ exports.login = async (req, res, next) => {
         phone: user.phone,
         role: role,
         token: token,
-      }
+      };
 
 
 
-      return Response.success(res, Message.success._success, userData)
+      return Response.success(res, Message.success._success, userData);
     }
-    next(createError(Status.code.BadRequest, Message.fail._invalidCredential))
+    next(createError(Status.code.BadRequest, Message.fail._invalidCredential));
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Get User from token.
@@ -263,12 +263,12 @@ exports.login = async (req, res, next) => {
  */
 exports.me = async (req, res, next) => {
   try {
-    const userData = req.user
-    return Response.success(res, Message.success._success, userData)
+    const userData = req.user;
+    return Response.success(res, Message.success._success, userData);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Create Admin.
@@ -286,7 +286,7 @@ exports.createAdmin = async (req, res, next) => {
       phone,
       email,
       password,
-    } = req.body
+    } = req.body;
 
     const encryptedPassword = password ? await bcrypt.hash(password, 10) : null;
 
@@ -302,13 +302,13 @@ exports.createAdmin = async (req, res, next) => {
 
     const roleUser = await db.Role.findOne({
       where: {
-        name: 'Admin'
+        name: "Admin"
       }
-    })
+    });
 
     await user.addRole(roleUser, {
       transaction: transaction
-    })
+    });
 
     const token = jwt.sign({
       user_id: user.id,
@@ -319,7 +319,7 @@ exports.createAdmin = async (req, res, next) => {
     }
     );
 
-    await transaction.commit()
+    await transaction.commit();
 
     const userData = {
       id: user.id,
@@ -329,16 +329,16 @@ exports.createAdmin = async (req, res, next) => {
       phone: user.phone,
       role: await user.getRoles(),
       token: token,
-    }
+    };
 
 
     return Response.success(res, Message.success._success, userData);
 
   } catch (error) {
-    await transaction.rollback()
-    next(error)
+    await transaction.rollback();
+    next(error);
   }
-}
+};
 
 /**
  * Get Admin.
@@ -352,7 +352,7 @@ exports.getAllAdmin = async (req, res, next) => {
   try {
 
     const userData = await User.findAll({
-      attributes: ['id', 'name', 'email', 'phone'],
+      attributes: ["id", "name", "email", "phone"],
       include: {
         require: true,
         model: db.Role,
@@ -361,14 +361,14 @@ exports.getAllAdmin = async (req, res, next) => {
         }
       }
       ,
-    })
+    });
 
     return Response.success(res, Message.success._success, userData);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Get a Admin.
@@ -380,10 +380,10 @@ exports.getAllAdmin = async (req, res, next) => {
  */
 exports.getOneAdmin = async (req, res, next) => {
   try {
-    const id = req.params.id
+    const id = req.params.id;
 
     const userData = await User.findOne({
-      attributes: ['id', 'name', 'email', 'phone'],
+      attributes: ["id", "name", "email", "phone"],
       where: {
         id: id
       },
@@ -395,15 +395,15 @@ exports.getOneAdmin = async (req, res, next) => {
         }
       }
       ,
-    })
-    if (!userData) return next(createError(Message.fail._notFound(`user: ${id}`)))
+    });
+    if (!userData) return next(createError(Message.fail._notFound(`user: ${id}`)));
 
     return Response.success(res, Message.success._success, userData);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Delete a Admin.
@@ -415,7 +415,7 @@ exports.getOneAdmin = async (req, res, next) => {
  */
 exports.destroyAdmin = async (req, res, next) => {
   try {
-    const id = req.params.id
+    const id = req.params.id;
 
     const userData = await User.findOne({
       where: {
@@ -429,16 +429,16 @@ exports.destroyAdmin = async (req, res, next) => {
         }
       }
       ,
-    })
-    if (!userData) return next(createError(Message.fail._notFound(`user: ${id}`)))
-    await userData.destroy()
+    });
+    if (!userData) return next(createError(Message.fail._notFound(`user: ${id}`)));
+    await userData.destroy();
 
     return Response.success(res, Message.success._success, null);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Reset a Admin Password.
@@ -450,7 +450,7 @@ exports.destroyAdmin = async (req, res, next) => {
  */
 exports.resetPasswordAdmin = async (req, res, next) => {
   try {
-    const id = req.params.id
+    const id = req.params.id;
 
     const userData = await User.findOne({
       where: {
@@ -464,21 +464,21 @@ exports.resetPasswordAdmin = async (req, res, next) => {
         }
       }
       ,
-    })
-    if (!userData) return next(createError(Message.fail._notFound(`user: ${id}`)))
+    });
+    if (!userData) return next(createError(Message.fail._notFound(`user: ${id}`)));
 
-    const password = await bcrypt.hash(req.body.new_password, 10)
+    const password = await bcrypt.hash(req.body.new_password, 10);
 
     await userData.update({
       password: password
-    })
+    });
 
     return Response.success(res, Message.success._success, userData);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Update Range.
@@ -492,27 +492,27 @@ exports.updateRange = async (req, res, next) => {
   try {
     const {
       range,
-    } = req.body
+    } = req.body;
 
-    if (!req.auth.package_id) return next(createError(Status.code.BadRequest, Message.fail._freeUser))
+    if (!req.auth.package_id) return next(createError(Status.code.BadRequest, Message.fail._freeUser));
 
     const userProfile = await req.auth.getUserProfile({
       where: {
-        range: 'free'
+        range: "free"
       }
-    })
+    });
 
-    if (!userProfile) return next(createError(Status.code.BadRequest, Message.fail._areadyChooseRange))
+    if (!userProfile) return next(createError(Status.code.BadRequest, Message.fail._areadyChooseRange));
 
-    userProfile.range = range
-    await userProfile.save()
+    userProfile.range = range;
+    await userProfile.save();
 
     return Response.success(res, Message.success._success, userProfile.range);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Reset a User Password.
@@ -524,11 +524,11 @@ exports.updateRange = async (req, res, next) => {
  */
 exports.resetPasswordUser = async (req, res, next) => {
   try {
-    const { id_token, password } = req.body
+    const { id_token, password } = req.body;
 
-    const decodeData = Otp.verify(id_token)
+    const decodeData = Otp.verify(id_token);
 
-    if (!decodeData) return next(createError(Status.code.BadRequest, Message.fail._invalidToken))
+    if (!decodeData) return next(createError(Status.code.BadRequest, Message.fail._invalidToken));
 
     const existUser = await db.User.findOne(
       {
@@ -544,20 +544,20 @@ exports.resetPasswordUser = async (req, res, next) => {
         }
         ,
       }
-    )
+    );
 
-    if (!existUser) return next(createError(Status.code.BadRequest, Message.fail._notFound('user')))
+    if (!existUser) return next(createError(Status.code.BadRequest, Message.fail._notFound("user")));
 
     const encryptedPassword = await bcrypt.hash(password, 10);
 
     await existUser.update({
       password: encryptedPassword,
       resetPasswordAt: new Date().getTime() / 1000
-    })
+    });
 
     return Response.success(res, Message.success._success, existUser);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};

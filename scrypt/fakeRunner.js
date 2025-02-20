@@ -1,15 +1,15 @@
-import db from '../models'
-import faker from 'faker'
-import bcrypt from 'bcryptjs'
+import db from "../models";
+import faker from "faker";
+import bcrypt from "bcryptjs";
 
 db.Package.findAll()
   .then(packages => {
-    bcrypt.hash('11111111', 10).then(encryptedPassword => {
+    bcrypt.hash("11111111", 10).then(encryptedPassword => {
       packages.forEach((pack) => createPackageResult(10, pack, encryptedPassword));
     }).catch(error => {
       console.log("bcrypt.hash: ", error);
-    })
-    return true
+    });
+    return true;
   }).catch(error => {
     console.log("Package.findAll: ", error);
   });
@@ -38,30 +38,30 @@ function createPackageResult(count, pack, encryptedPassword) {
     user.createUserProfile({
       name: user.name,
       surname: faker.name.lastName(),
-      gender: faker.random.arrayElement(['male', 'female']),
-      range: faker.random.arrayElement(['15', '42', '100', '200']),
+      gender: faker.random.arrayElement(["male", "female"]),
+      range: faker.random.arrayElement(["15", "42", "100", "200"]),
       dob: faker.date.past(20),
-      bib: user.id.toString().padStart(5, '0'),
+      bib: user.id.toString().padStart(5, "0"),
       national_id: 126,
       profile_image: faker.image.imageUrl(),
-      profile_image_id: 'AAAAAAAA'
+      profile_image_id: "AAAAAAAA"
     });
 
     user.createUserPackage({
       total: 3,
       package_id: pack.id,
-      status: 'success',
-      invoice_id: '964e7f7a25',
-      transaction_id: '007110268a',
-      terminal_id: '2fa384dbd6',
-      ticket_id: 'F5DNQ7F065BB'
+      status: "success",
+      invoice_id: "964e7f7a25",
+      transaction_id: "007110268a",
+      terminal_id: "2fa384dbd6",
+      ticket_id: "F5DNQ7F065BB"
     });
 
-    user.addRoles([2])
+    user.addRoles([2]);
 
     user.update({
       package_id: pack.id
-    })
+    });
 
 
     let runnerResultFakers = [];
@@ -74,7 +74,7 @@ function createPackageResult(count, pack, encryptedPassword) {
           }),
           range: (Math.random() * (5 - 0.02) + 0.0200).toFixed(2),
           image: faker.image.imageUrl(),
-          image_id: 'AAAAAAAA',
+          image_id: "AAAAAAAA",
           status: "approve",
           approved_by: 1
         })
@@ -88,7 +88,7 @@ function createPackageResult(count, pack, encryptedPassword) {
         return {
           total_range,
           total_time,
-        }
+        };
       }, {
         total_range: 0,
         total_time: 0,
@@ -96,7 +96,7 @@ function createPackageResult(count, pack, encryptedPassword) {
       user.createRanking({
         total_range: summary.total_range,
         total_time: summary.total_time
-      })
+      });
     });
   }
 

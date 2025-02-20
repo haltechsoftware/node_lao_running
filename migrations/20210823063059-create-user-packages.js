@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('user_packages', {
+    await queryInterface.createTable("user_packages", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,17 +12,17 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'users',
-          key: 'id'
+          model: "users",
+          key: "id"
         },
-        onDelete: 'cascade'
+        onDelete: "cascade"
       },
       package_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'packages',
-          key: 'id'
+          model: "packages",
+          key: "id"
         },
       },
       total: {
@@ -31,9 +31,9 @@ module.exports = {
         defaultValue: 0
       },
       status: {
-        type: Sequelize.ENUM('pending', 'success'),
+        type: Sequelize.ENUM("pending", "success"),
         allowNull: false,
-        defaultValue: 'pending'
+        defaultValue: "pending"
       },
       invoice_id: {
         type: Sequelize.STRING,
@@ -62,6 +62,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('user_packages');
+    await queryInterface.dropTable("user_packages");
   }
 };

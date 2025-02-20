@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('run_results', {
+    await queryInterface.createTable("run_results", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,24 +12,24 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'users',
-          key: 'id'
+          model: "users",
+          key: "id"
         },
-        onDelete: 'cascade'
+        onDelete: "cascade"
       },
       approved_by: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'users',
-          key: 'id'
+          model: "users",
+          key: "id"
         },
-        onDelete: 'cascade'
+        onDelete: "cascade"
       },
       status: {
-        type: Sequelize.ENUM('pending', 'approve', 'reject'),
+        type: Sequelize.ENUM("pending", "approve", "reject"),
         allowNull: false,
-        defaultValue: 'pending'
+        defaultValue: "pending"
       },
       reject_description: {
         type: Sequelize.TEXT,
@@ -63,6 +63,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('run_results');
+    await queryInterface.dropTable("run_results");
   }
 };

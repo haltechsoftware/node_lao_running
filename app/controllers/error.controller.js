@@ -1,5 +1,5 @@
-import Response from '../helpers/response.helper';
-import Message from '../helpers/message.helper';
+import Response from "../helpers/response.helper";
+import Message from "../helpers/message.helper";
 
 /**
  * Get Error.
@@ -10,5 +10,5 @@ import Message from '../helpers/message.helper';
  * @returns \app\helpers\response.helper
  */
 exports.error = async (req, res) => {
-  res.send('Route is not exists.')
-}
+  res.send("Route is not exists.");
+};

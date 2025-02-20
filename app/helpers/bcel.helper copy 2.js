@@ -2,8 +2,8 @@ exports.getCode = (params) => {
   const mcid = process.env.BCEL_MCID_V2;
   const mcc = process.env.BCEL_MCC_V2;
   const ccy = 418;
-  const province = 'VTE';
-  const country = 'LA';
+  const province = "VTE";
+  const country = "LA";
 
   function pad2(data) {
     return ("0" + (data + "")).substr(-2);
@@ -113,5 +113,5 @@ exports.getCode = (params) => {
     ["63", crc16(rawqr + "6304")]
   ]); // Adding itself into checksum
 
-  return fullqr
+  return fullqr;
 };

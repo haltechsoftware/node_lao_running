@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('package_register_rewards', {
+    await queryInterface.createTable("package_register_rewards", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,8 +12,8 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'packages',
-          key: 'id'
+          model: "packages",
+          key: "id"
         },
       },
       value_la: {
@@ -33,6 +33,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('package_register_rewards');
+    await queryInterface.dropTable("package_register_rewards");
   }
 };

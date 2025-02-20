@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class HalBranche extends Model {
     /**
@@ -11,15 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       HalBranche.belongsTo(models.District, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'district_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "district_id"
+      });
       HalBranche.hasMany(models.UserProfile, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'hal_branche_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "hal_branche_id"
+      });
     }
   };
   HalBranche.init({
@@ -55,8 +55,8 @@ module.exports = (sequelize, DataTypes) => {
     district_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'districts',
-        key: 'id'
+        model: "districts",
+        key: "id"
       },
     },
     createdAt: {
@@ -71,8 +71,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'HalBranche',
-    tableName: 'hal_branches',
+    modelName: "HalBranche",
+    tableName: "hal_branches",
   });
   return HalBranche;
 };

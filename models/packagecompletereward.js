@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class PackageCompleteReward extends Model {
     /**
@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       PackageCompleteReward.belongsTo(models.Package, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
     }
   };
   PackageCompleteReward.init({
@@ -22,24 +22,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'packages',
-        key: 'id'
+        model: "packages",
+        key: "id"
       },
     },
     winner_type_la: {
-      type: DataTypes.ENUM('ຈາກ​ການ​ສຸ່ມສະ​ເພາະ​ຜູ້​ທີ່​ແລ່ນ​ຕາມ​ເປົ້າ​ໝາຍ', 'ໄດ້ທັນທີເມື່ອແລ່ນຄົບຕາມເປົ້າໝາຍ'),
+      type: DataTypes.ENUM("ຈາກ​ການ​ສຸ່ມສະ​ເພາະ​ຜູ້​ທີ່​ແລ່ນ​ຕາມ​ເປົ້າ​ໝາຍ", "ໄດ້ທັນທີເມື່ອແລ່ນຄົບຕາມເປົ້າໝາຍ"),
       allowNull: false
     },
     winner_type_en: {
-      type: DataTypes.ENUM('From a lucky draw', 'When complete the goal'),
+      type: DataTypes.ENUM("From a lucky draw", "When complete the goal"),
       allowNull: false
     },
     ranking_en: {
-      type: DataTypes.ENUM('1st', '2nd', '3rd', 'none'),
+      type: DataTypes.ENUM("1st", "2nd", "3rd", "none"),
       allowNull: false
     },
     ranking_la: {
-      type: DataTypes.ENUM('ທີ 1', 'ທີ 2', 'ທີ 3', 'ບໍ່ຈັດອັນດັບ'),
+      type: DataTypes.ENUM("ທີ 1", "ທີ 2", "ທີ 3", "ບໍ່ຈັດອັນດັບ"),
       allowNull: false
     },
     prize_la: {
@@ -60,8 +60,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'PackageCompleteReward',
-    tableName: 'package_complete_rewards',
+    modelName: "PackageCompleteReward",
+    tableName: "package_complete_rewards",
   });
   return PackageCompleteReward;
 };

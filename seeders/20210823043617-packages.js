@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
 
-    await queryInterface.bulkInsert('packages', [{
-      name: 'Starter',
+    await queryInterface.bulkInsert("packages", [{
+      name: "Starter",
       price: process.env.NODE_ENV == "production"
         ? 149000
         : 2,
@@ -12,20 +12,20 @@ module.exports = {
       updatedAt: new Date(),
     },
     {
-      name: 'Pro',
+      name: "Pro",
       price: process.env.NODE_ENV == "production"
         ? 199000
         : 3,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-    ], {})
+    ], {});
   },
 
 
   down: async (queryInterface, Sequelize) => {
 
-    await queryInterface.bulkDelete('packages', null, {});
+    await queryInterface.bulkDelete("packages", null, {});
 
   }
 };

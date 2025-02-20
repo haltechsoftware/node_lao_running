@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class PackageRegisterReward extends Model {
     /**
@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       PackageRegisterReward.belongsTo(models.Package, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
     }
   };
   PackageRegisterReward.init({
@@ -22,8 +22,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'packages',
-        key: 'id'
+        model: "packages",
+        key: "id"
       },
     },
     value_la: DataTypes.STRING,
@@ -40,8 +40,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'PackageRegisterReward',
-    tableName: 'package_register_rewards',
+    modelName: "PackageRegisterReward",
+    tableName: "package_register_rewards",
   });
   return PackageRegisterReward;
 };

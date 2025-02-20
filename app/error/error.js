@@ -2,15 +2,15 @@
 class CharacterCountExceeded extends Error { // parent error
   constructor(post_id, content) {
     super();
-    this.name = this.constructor.name // good practice
+    this.name = this.constructor.name; // good practice
 
     if (this instanceof LongTitleError) // checking if title or body
-      this.type = 'title'
+      this.type = "title";
     else if (this instanceof LongBodyError)
-      this.type = 'body'
+      this.type = "body";
 
-    this.message = `The character count of post (id: ${post_id}) ${this.type} is too long. (${content.length} characters)` // detailed error message
-    this.statusCode = 500 // error code for responding to client
+    this.message = `The character count of post (id: ${post_id}) ${this.type} is too long. (${content.length} characters)`; // detailed error message
+    this.statusCode = 500; // error code for responding to client
   }
 }
 
@@ -22,4 +22,4 @@ module.exports = {
   CharacterCountExceeded,
   LongTitleError,
   LongBodyError
-}
+};

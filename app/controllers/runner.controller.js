@@ -1,13 +1,13 @@
 import db from "../../models";
-import Response from '../helpers/response.helper';
-import Status from '../helpers/status.helper';
-import Message from '../helpers/message.helper';
-import Image from '../helpers/upload.helper'
-import Onepay from '../helpers/bcel.helper'
-import UniqueId from '../helpers/uniqueId.helper'
-import QRCode from 'qrcode'
-import createError from 'http-errors'
-import axios from 'axios'
+import Response from "../helpers/response.helper";
+import Status from "../helpers/status.helper";
+import Message from "../helpers/message.helper";
+import Image from "../helpers/upload.helper";
+import Onepay from "../helpers/bcel.helper";
+import UniqueId from "../helpers/uniqueId.helper";
+import QRCode from "qrcode";
+import createError from "http-errors";
+import axios from "axios";
 
 /**
  * Update User Profile.
@@ -25,10 +25,10 @@ exports.updateProfile = async (req, res, next) => {
       where: {
         user_id: req.user.user_id
       },
-    })
+    });
 
     if (!userProfile)
-      next(createError(Status.code.NotFound, Message.fail._notFound('user_profile')))
+      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
 
     const {
       name,
@@ -36,18 +36,18 @@ exports.updateProfile = async (req, res, next) => {
       gender,
       dob,
       national_id,
-    } = req.body
+    } = req.body;
 
-    let profile_image = userProfile.profile_image ? userProfile.profile_image : null
-    let profile_image_id = userProfile.profile_image_id ? userProfile.profile_image_id : null
+    let profile_image = userProfile.profile_image ? userProfile.profile_image : null;
+    let profile_image_id = userProfile.profile_image_id ? userProfile.profile_image_id : null;
 
     if (req.file) {
       if (profile_image && profile_image_id) {
-        await Image.destroy(profile_image_id)
+        await Image.destroy(profile_image_id);
       }
-      const cloudImage = await Image.upload(req.file)
-      profile_image_id = cloudImage.public_id
-      profile_image = cloudImage.secure_url
+      const cloudImage = await Image.upload(req.file);
+      profile_image_id = cloudImage.public_id;
+      profile_image = cloudImage.secure_url;
     }
 
     const updateData = await userProfile.update({
@@ -60,17 +60,17 @@ exports.updateProfile = async (req, res, next) => {
       profile_image: profile_image
     }, {
       transaction: transaction,
-    })
+    });
 
 
-    await transaction.commit()
+    await transaction.commit();
     return Response.success(res, Message.success._success, updateData);
 
   } catch (error) {
-    await transaction.rollback()
-    next(error)
+    await transaction.rollback();
+    next(error);
   }
-}
+};
 
 /**
  * Update User Location.
@@ -84,24 +84,24 @@ exports.updateUserLocation = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
 
-    const userProfile = await req.auth.getUserProfile()
+    const userProfile = await req.auth.getUserProfile();
 
     if (!userProfile)
-      next(createError(Status.code.NotFound, Message.fail._notFound('user_profile')))
+      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
 
-    let hal_branche_id = req.body.hal_branche_id
-    const size = req.body.size
+    let hal_branche_id = req.body.hal_branche_id;
+    const size = req.body.size;
 
     if (!hal_branche_id) {
       const Evo = await db.HalBranche.findOne({
         where: {
           name: "EVO Store"
         }
-      })
+      });
       if (!Evo)
-        next(createError(Status.code.NotFound, Message.fail._notFound('evo_store')))
+        next(createError(Status.code.NotFound, Message.fail._notFound("evo_store")));
 
-      hal_branche_id = Evo.id
+      hal_branche_id = Evo.id;
     }
 
     const updateData = await userProfile.update({
@@ -109,17 +109,17 @@ exports.updateUserLocation = async (req, res, next) => {
       size_shirt: size
     }, {
       transaction: transaction,
-    })
+    });
 
 
-    await transaction.commit()
+    await transaction.commit();
     return Response.success(res, Message.success._success, updateData);
 
   } catch (error) {
-    await transaction.rollback()
-    next(error)
+    await transaction.rollback();
+    next(error);
   }
-}
+};
 
 /**
  * Get User Profile.
@@ -138,32 +138,32 @@ exports.getProfile = async (req, res, next) => {
       include: {
         model: db.HalBranche
       }
-    })
+    });
     if (!userProfile)
-      next(createError(Status.code.NotFound, Message.fail._notFound('user_profile')))
+      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
 
     const ranking = await req.auth.getRanking({
-      attributes: ['total_range', 'total_time']
-    })
+      attributes: ["total_range", "total_time"]
+    });
 
     const userPackage = await req.auth.getUserPackage({
-      attributes: ['package_id', 'status', 'transaction_id'],
+      attributes: ["package_id", "status", "transaction_id"],
       include: {
         model: db.Package,
-        attributes: ['name']
+        attributes: ["name"]
       }
-    })
+    });
 
-    let resData = userProfile.dataValues
-    resData.ranking = ranking
-    resData.package = userPackage
+    let resData = userProfile.dataValues;
+    resData.ranking = ranking;
+    resData.package = userPackage;
 
     return Response.success(res, Message.success._success, resData);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Check Phone Number unique.
@@ -175,18 +175,18 @@ exports.getProfile = async (req, res, next) => {
  */
 exports.isUnique = async (req, res, next) => {
   try {
-    const phone = req.query.phone ? req.query.phone : null
+    const phone = req.query.phone ? req.query.phone : null;
 
     if (phone < 8)
       next(createError(Status.code.Validation, {
-        phone: Message.validation('min', 'phone', 8)
-      }))
+        phone: Message.validation("min", "phone", 8)
+      }));
 
     const user = await db.User.findOne({
       where: {
         phone: phone
       }
-    })
+    });
 
     if (!user)
       return Response.success(res, Message.success._success, true);
@@ -195,9 +195,9 @@ exports.isUnique = async (req, res, next) => {
 
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Get Bcel Qr.
@@ -208,16 +208,16 @@ exports.isUnique = async (req, res, next) => {
  * @returns \app\helpers\response.helper
  */
 exports.getBcelQr = async (req, res, next) => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.sequelize.transaction();
   try {
-    const runnerPackage = await db.Package.findByPk(req.params.packageId)
-    if (!runnerPackage) return next(createError(Status.code.NotFound, Message.fail._notFound('runner_package')))
+    const runnerPackage = await db.Package.findByPk(req.params.packageId);
+    if (!runnerPackage) return next(createError(Status.code.NotFound, Message.fail._notFound("runner_package")));
 
     let userPackage = await db.UserPackage.findOne({
       where: {
         user_id: req.user.user_id
       },
-    })
+    });
 
     /**
      * @overide  userPackage
@@ -231,16 +231,16 @@ exports.getBcelQr = async (req, res, next) => {
         terminal_id: await UniqueId.generateRandomTerminalId(),
       }, {
         transaction: transaction
-      })
+      });
     }
 
-    if (userPackage.status == 'pending') {
+    if (userPackage.status == "pending") {
       await userPackage.update({
         package_id: runnerPackage.id,
         total: runnerPackage.price,
       }, {
         transaction: transaction
-      })
+      });
 
       const data = {
         transactionid: userPackage.transaction_id,
@@ -248,10 +248,10 @@ exports.getBcelQr = async (req, res, next) => {
         terminalid: userPackage.terminal_id,
         description: Message.description._paymentDescription(runnerPackage.name),
         amount: runnerPackage.price,
-      }
+      };
 
-      const qr_number = Onepay.getCode(data)
-      const qr = await QRCode.toDataURL(qr_number)
+      const qr_number = Onepay.getCode(data);
+      const qr = await QRCode.toDataURL(qr_number);
 
       const paymentData = {
         id: userPackage.id,
@@ -263,18 +263,18 @@ exports.getBcelQr = async (req, res, next) => {
         terminal_id: userPackage.terminal_id,
         qr_number: qr_number,
         payment_qr: qr
-      }
+      };
 
-      await transaction.commit()
+      await transaction.commit();
       return Response.success(res, Message.success._success, paymentData);
     }
-    await transaction.commit()
-    next(createError(Status.code.BadRequest, userPackage))
+    await transaction.commit();
+    next(createError(Status.code.BadRequest, userPackage));
   } catch (error) {
-    await transaction.rollback()
-    next(error)
+    await transaction.rollback();
+    next(error);
   }
-}
+};
 
 /**
  * Pay Bcel Qr.
@@ -285,59 +285,59 @@ exports.getBcelQr = async (req, res, next) => {
  * @returns \app\helpers\response.helper
  */
 exports.payBcelQr = async (req, res, next) => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await db.sequelize.transaction();
   try {
-    const transaction_id = req.body.transaction_id || req.query.transaction_id
+    const transaction_id = req.body.transaction_id || req.query.transaction_id;
 
     let bcelTransaction;
     try {
-      bcelTransaction = await axios.get('https://bcel.la:8083/onepay/gettransaction.php', {
+      bcelTransaction = await axios.get("https://bcel.la:8083/onepay/gettransaction.php", {
         params: {
           mcid: process.env.BCEL_MCID_V2,
           uuid: transaction_id,
         }
-      })
+      });
     } catch (error) {
-      next(createError(Status.code.NotFound, Message.fail._notFound('transaction')))
+      next(createError(Status.code.NotFound, Message.fail._notFound("transaction")));
     }
 
     const payment = await db.UserPackage.findOne({
       where: {
         user_id: req.user.user_id
       }
-    })
-    if (!payment) return next(createError(Status.code.NotFound, Message.fail._notFound('payment')))
-    if (payment.status == 'success') return next(createError(Status.code.BadRequest, payment))
+    });
+    if (!payment) return next(createError(Status.code.NotFound, Message.fail._notFound("payment")));
+    if (payment.status == "success") return next(createError(Status.code.BadRequest, payment));
 
-    const runnerPackage = await db.Package.findByPk(req.params.packageId)
-    if (!runnerPackage) return next(createError(Status.code.NotFound, Message.fail._notFound('package')))
+    const runnerPackage = await db.Package.findByPk(req.params.packageId);
+    if (!runnerPackage) return next(createError(Status.code.NotFound, Message.fail._notFound("package")));
 
     const paid = await payment.update({
       ticket_id: bcelTransaction.data.ticket,
       package_id: runnerPackage.id,
       total: runnerPackage.price,
-      status: 'success',
+      status: "success",
     }, {
       transaction: transaction
-    })
+    });
 
     await req.auth.update({
       package_id: runnerPackage.id,
     }, {
       transaction: transaction
-    })
+    });
 
-    await transaction.commit()
+    await transaction.commit();
 
 
 
     return Response.success(res, Message.success._success, paid);
 
   } catch (error) {
-    await transaction.rollback()
-    next(error)
+    await transaction.rollback();
+    next(error);
   }
-}
+};
 
 /**
  * Get all runner.
@@ -349,8 +349,8 @@ exports.payBcelQr = async (req, res, next) => {
  */
 exports.getAllRunner = async (req, res, next) => {
   try {
-    const bib = req.query.bib
-    const package_runner = req.query.package_runner
+    const bib = req.query.bib;
+    const package_runner = req.query.package_runner;
 
     const condition = bib ? {
       bib: bib
@@ -363,7 +363,7 @@ exports.getAllRunner = async (req, res, next) => {
         package_id: null
       } : {
         package_id: package_runner
-      }
+      };
     }
 
     const include = [{
@@ -373,32 +373,32 @@ exports.getAllRunner = async (req, res, next) => {
       model: db.User,
       where: package_runnerCondition,
       required: true,
-      attributes: ['id', 'name', 'email', 'phone'],
+      attributes: ["id", "name", "email", "phone"],
       include: [{
         model: db.Ranking,
-        attributes: ['total_range', 'total_time']
+        attributes: ["total_range", "total_time"]
       }, {
         model: db.UserPackage,
-        attributes: ['package_id', 'status', 'transaction_id'],
+        attributes: ["package_id", "status", "transaction_id"],
         include: {
           model: db.Package,
-          attributes: ['name']
+          attributes: ["name"]
         }
       }]
     },
-    ]
+    ];
 
     const orderCondition = [
-      ['id', 'DESC']
+      ["id", "DESC"]
     ];
 
     // Pagiate
-    const per_page = Number.parseInt(req.query.per_page)
-    let page = Number.parseInt(req.query.page)
+    const per_page = Number.parseInt(req.query.per_page);
+    let page = Number.parseInt(req.query.page);
 
     if (per_page) {
-      let userProfileData = {}
-      page = page && page > 0 ? page : 1
+      let userProfileData = {};
+      page = page && page > 0 ? page : 1;
 
       const userProfile = await db.UserProfile.findAndCountAll({
         where: condition,
@@ -407,15 +407,15 @@ exports.getAllRunner = async (req, res, next) => {
         limit: per_page,
         offset: (page - 1) * per_page,
         subQuery: false
-      })
+      });
 
-      userProfileData.data = userProfile.rows
+      userProfileData.data = userProfile.rows;
       userProfileData.pagination = {
         total: userProfile.count,
         per_page: per_page,
         total_pages: Math.ceil(userProfile.count / per_page),
         current_page: page
-      }
+      };
       return Response.success(res, Message.success._success, userProfileData);
     }
 
@@ -423,14 +423,14 @@ exports.getAllRunner = async (req, res, next) => {
       where: condition,
       include: include,
       order: orderCondition
-    })
+    });
 
     return Response.success(res, Message.success._success, userProfile);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 /**
  * Get a runner.
@@ -443,7 +443,7 @@ exports.getAllRunner = async (req, res, next) => {
 exports.getOneRunner = async (req, res, next) => {
   try {
 
-    const id = req.params.user_profile_id
+    const id = req.params.user_profile_id;
 
     const userProfile = await db.UserProfile.findOne({
       where: { id: id },
@@ -453,25 +453,25 @@ exports.getOneRunner = async (req, res, next) => {
       {
         model: db.User,
         required: true,
-        attributes: ['id', 'name', 'email', 'phone'],
+        attributes: ["id", "name", "email", "phone"],
         include: [{
           model: db.Ranking,
-          attributes: ['total_range', 'total_time']
+          attributes: ["total_range", "total_time"]
         }, {
           model: db.UserPackage,
-          attributes: ['package_id', 'status', 'transaction_id'],
+          attributes: ["package_id", "status", "transaction_id"],
           include: {
             model: db.Package,
-            attributes: ['name']
+            attributes: ["name"]
           }
         }]
       },
       ],
-    })
+    });
 
     return Response.success(res, Message.success._success, userProfile);
 
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};

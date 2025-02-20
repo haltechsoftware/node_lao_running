@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 import {
   Model
-} from 'sequelize';
+} from "sequelize";
 module.exports = (sequelize, DataTypes) => {
   class Package extends Model {
     /**
@@ -11,30 +11,30 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Package.hasMany(models.UserPackage, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
       Package.hasMany(models.PackageCompleteReward, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
       Package.hasMany(models.PackageRegisterReward, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
       Package.hasMany(models.PackageImage, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
       Package.hasMany(models.User, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
     }
   };
 
@@ -65,8 +65,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Package',
-    tableName: 'packages',
+    modelName: "Package",
+    tableName: "packages",
   });
   return Package;
 };

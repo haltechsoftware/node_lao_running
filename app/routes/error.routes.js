@@ -7,5 +7,5 @@
       // Get Error.
       router.get("/error", error.error);
 
-      app.use('/api', router);
-    }
+      app.use("/api", router);
+    };

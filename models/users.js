@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 import {
   Model
 }
-  from 'sequelize';
-import Message from '../app/helpers/message.helper'
+  from "sequelize";
+import Message from "../app/helpers/message.helper";
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -14,29 +14,29 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       User.hasOne(models.UserProfile, {
-        foreignKey: 'user_id'
-      })
+        foreignKey: "user_id"
+      });
 
       User.hasOne(models.UserPackage, {
-        foreignKey: 'user_id'
-      })
+        foreignKey: "user_id"
+      });
 
       User.hasMany(models.RunResult, {
-        foreignKey: 'user_id'
-      })
+        foreignKey: "user_id"
+      });
 
       User.belongsToMany(models.Role, {
         through: models.RoleUser,
-        foreignKey: 'user_id',
-      })
+        foreignKey: "user_id",
+      });
 
       User.hasOne(models.Ranking, {
-        foreignKey: 'user_id'
-      })
+        foreignKey: "user_id"
+      });
 
       User.belongsTo(models.Package, {
-        foreignKey: 'package_id'
-      })
+        foreignKey: "package_id"
+      });
     }
   };
   User.init({
@@ -50,8 +50,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'packages',
-        key: 'id'
+        model: "packages",
+        key: "id"
       },
     },
     name: {
@@ -64,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       validate: {
         isEmail: {
-          msg: Message.validation('is_email', 'users.email')
+          msg: Message.validation("is_email", "users.email")
         },
       }
     },
@@ -105,8 +105,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'User',
-    tableName: 'users',
+    modelName: "User",
+    tableName: "users",
   });
   return User;
 };

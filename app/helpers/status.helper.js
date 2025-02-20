@@ -11,7 +11,7 @@ exports.code = {
 };
 
 exports.userPackageStatus = {
-  Pending: 'pending',
-  Success: 'confirmed',
-  Cancel: 'rejected',
+  Pending: "pending",
+  Success: "confirmed",
+  Cancel: "rejected",
 };

@@ -1,12 +1,12 @@
-import Response from '../helpers/response.helper'
-import Status from '../helpers/status.helper'
-import Message from '../helpers/message.helper'
-import db from "../../models"
-import createError from 'http-errors'
+import Response from "../helpers/response.helper";
+import Status from "../helpers/status.helper";
+import Message from "../helpers/message.helper";
+import db from "../../models";
+import createError from "http-errors";
 import {
   Joi, validate
-} from 'express-validation'
-import validator from '../utils/validator'
+} from "express-validation";
+import validator from "../utils/validator";
 
 exports.JoiRegist = {
   body: Joi.object({
@@ -17,7 +17,7 @@ exports.JoiRegist = {
       .regex(/[a-zA-Z0-9]{3,30}/)
       .required(),
   })
-}
+};
 
 exports.login = validator.validateDefault(
   {
@@ -29,7 +29,7 @@ exports.login = validator.validateDefault(
         .required(),
     }),
   }
-)
+);
 
 exports.secondStep = validator.validateDefault(
   {
@@ -43,7 +43,7 @@ exports.secondStep = validator.validateDefault(
         .required(),
     }),
   }
-)
+);
 
 exports.firstStep = validator.validateDefault(
   {
@@ -59,7 +59,7 @@ exports.firstStep = validator.validateDefault(
         .required(),
     }),
   }
-)
+);
 
 exports.resetPassword = validator.validateDefault(
   {
@@ -70,16 +70,16 @@ exports.resetPassword = validator.validateDefault(
         .required(),
     }),
   }
-)
+);
 
 exports.updateRange = validator.validateDefault(
   {
     body: Joi.object({
-      range: Joi.string().valid('15', '42', '100', '200')
+      range: Joi.string().valid("15", "42", "100", "200")
         .required()
     }),
   }
-)
+);
 
 exports.lastStep = validator.validateDefault(
   {
@@ -104,7 +104,7 @@ exports.lastStep = validator.validateDefault(
         .required(),
     }),
   }
-)
+);
 
 exports.resetPasswordUser = validator.validateDefault(
   {
@@ -117,4 +117,4 @@ exports.resetPasswordUser = validator.validateDefault(
         .required(),
     }),
   }
-)
+);

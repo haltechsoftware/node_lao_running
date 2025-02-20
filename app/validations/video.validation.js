@@ -1,7 +1,7 @@
 import {
   Joi,
-} from 'express-validation'
-import validator from '../utils/validator'
+} from "express-validation";
+import validator from "../utils/validator";
 
 exports.store = validator.validateDefault(
   {
@@ -10,4 +10,4 @@ exports.store = validator.validateDefault(
         .required(),
     }),
   }
-)
+);

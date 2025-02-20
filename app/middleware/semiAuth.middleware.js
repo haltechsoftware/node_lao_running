@@ -5,8 +5,8 @@ const verifyToken = (req, res, next) => {
     req.body.token || req.query.token || req.headers["x-access-token"] || req.headers["authorization"];
 
   if (token) {
-    if (token.substring(0, 6) === 'Bearer') {
-      const bearer = token.split(' ');
+    if (token.substring(0, 6) === "Bearer") {
+      const bearer = token.split(" ");
       token = bearer[1];
     }
 

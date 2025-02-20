@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class PackageImage extends Model {
     /**
@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       PackageImage.belongsTo(models.Package, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'package_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id"
+      });
     }
   };
   PackageImage.init({
@@ -22,8 +22,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'packages',
-        key: 'id'
+        model: "packages",
+        key: "id"
       },
     },
     value: DataTypes.STRING,
@@ -39,8 +39,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'PackageImage',
-    tableName: 'package_images',
+    modelName: "PackageImage",
+    tableName: "package_images",
   });
   return PackageImage;
 };

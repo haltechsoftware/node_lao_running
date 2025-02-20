@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('user_profiles', {
+    await queryInterface.createTable("user_profiles", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,10 +12,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'users',
-          key: 'id'
+          model: "users",
+          key: "id"
         },
-        onDelete: 'cascade'
+        onDelete: "cascade"
       },
       bib: {
         type: Sequelize.STRING,
@@ -30,12 +30,12 @@ module.exports = {
         allowNull: false
       },
       gender: {
-        type: Sequelize.ENUM('male', 'female'),
+        type: Sequelize.ENUM("male", "female"),
         allowNull: false
       },
       range: {
         type: Sequelize.ENUM,
-        values: ['free', '15', '42', '100', '200'],
+        values: ["free", "15", "42", "100", "200"],
         allowNull: true,
       },
       dob: {
@@ -50,16 +50,16 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'nationals',
-          key: 'id'
+          model: "nationals",
+          key: "id"
         }
       },
       hal_branche_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
-          model: 'hal_branches',
-          key: 'id'
+          model: "hal_branches",
+          key: "id"
         }
       },
       profile_image: {
@@ -82,6 +82,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('user_profiles');
+    await queryInterface.dropTable("user_profiles");
   }
 };

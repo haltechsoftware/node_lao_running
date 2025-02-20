@@ -1,10 +1,10 @@
-'use strict';
-const Country = require('countries-list')
+"use strict";
+const Country = require("countries-list");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const countryList = Country.countries;
-    const nameList = []
+    const nameList = [];
     Object.keys(countryList).map((key) => {
       nameList.push({
         name: countryList[key].name,
@@ -13,12 +13,12 @@ module.exports = {
         currency: countryList[key].currency,
         continent: countryList[key].continent,
         capital: countryList[key].capital,
-      })
-    })
-    await queryInterface.bulkInsert('nationals', nameList, {});
+      });
+    });
+    await queryInterface.bulkInsert("nationals", nameList, {});
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('nationals', null, {});
+    await queryInterface.bulkDelete("nationals", null, {});
   }
 };

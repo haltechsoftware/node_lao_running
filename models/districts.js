@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 const {
   Model
-} = require('sequelize');
+} = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class District extends Model {
     /**
@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       District.belongsTo(models.Province, {
-        onDelete: 'cascade',
-        onUpdate: 'cascade',
-        foreignKey: 'province_id'
-      })
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "province_id"
+      });
     }
   };
   District.init({
@@ -30,8 +30,8 @@ module.exports = (sequelize, DataTypes) => {
     province_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'provinces',
-        key: 'id'
+        model: "provinces",
+        key: "id"
       },
     },
     createdAt: {
@@ -46,8 +46,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'District',
-    tableName: 'districts',
+    modelName: "District",
+    tableName: "districts",
   });
   return District;
 };
