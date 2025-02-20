@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
-import 'dotenv/config';
-import createError from 'http-errors'
-import Response from './app/helpers/response.helper'
-import Message from './app/helpers/message.helper'
-const { ValidationError } = require('express-validation')
+import "dotenv/config";
+import createError from "http-errors";
+import Response from "./app/helpers/response.helper";
+import Message from "./app/helpers/message.helper";
+const { ValidationError } = require("express-validation");
 const app = express();
 
 const corsOptions = {
@@ -48,23 +48,23 @@ contact(app);
 import error from "./app/routes/error.routes";
 error(app);
 
-process.on('unhandledRejection', function (err) {
-  console.error('unhandledRejection: ', err);
+process.on("unhandledRejection", function (err) {
+  console.error("unhandledRejection: ", err);
   process.exit(1); // Exit the process to prevent unstable state
 });
 
 app.use((req, res, next) => {
-  const error = createError(404, Message.fail._routeNotfound)
-  next(error)
-})
+  const error = createError(404, Message.fail._routeNotfound);
+  next(error);
+});
 
 app.use((error, req, res, next) => {
   console.log(error);
   if (error instanceof ValidationError) {
-    return res.status(error.statusCode).json(error)
+    return res.status(error.statusCode).json(error);
   }
-  Response.error(res, error)
-})
+  Response.error(res, error);
+});
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8000;

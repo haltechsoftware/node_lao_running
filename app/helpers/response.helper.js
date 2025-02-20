@@ -1,5 +1,5 @@
-import Message from '../helpers/message.helper'
-import Status from '../helpers/status.helper'
+import Message from "../helpers/message.helper";
+import Status from "../helpers/status.helper";
 
 exports.success = (res, msg, data, code = 200) => {
   var resData = {
@@ -13,7 +13,7 @@ exports.success = (res, msg, data, code = 200) => {
 };
 
 exports.error = (res, error) => {
-  if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+  if (error.name === "SequelizeValidationError" || error.name === "SequelizeUniqueConstraintError") {
     let resData = {
       error: true,
       code: Status.code.Validation,
@@ -28,7 +28,7 @@ exports.error = (res, error) => {
     return res.status(resData.code).json(resData);
   }
 
-  if (error.message === 'jwt malformed') {
+  if (error.message === "jwt malformed") {
     let resData = {
       error: true,
       code: Status.code.AuthError,

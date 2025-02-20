@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 import {
   Model
-} from 'sequelize';
-import Moment from 'moment'
+} from "sequelize";
+import Moment from "moment";
 
 module.exports = (sequelize, DataTypes) => {
   class UserProfile extends Model {
@@ -13,21 +13,21 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       UserProfile.belongsTo(models.User, {
-        foreignKey: 'user_id'
-      })
+        foreignKey: "user_id"
+      });
       UserProfile.belongsTo(models.HalBranche, {
-        foreignKey: 'hal_branche_id'
-      })
+        foreignKey: "hal_branche_id"
+      });
       UserProfile.belongsTo(models.National, {
-        foreignKey: 'national_id'
-      })
+        foreignKey: "national_id"
+      });
     }
 
     toJSON() {
       return {
         ...this.get(),
-        dob: Moment(this.dob).format('YYYY-MM-DD')
-      }
+        dob: Moment(this.dob).format("YYYY-MM-DD")
+      };
     }
   };
 
@@ -43,8 +43,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'users',
-        key: 'id'
+        model: "users",
+        key: "id"
       },
     },
     bib: {
@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     gender: {
-      type: DataTypes.ENUM('male', 'female'),
+      type: DataTypes.ENUM("male", "female"),
       allowNull: false
     },
     dob: {
@@ -71,15 +71,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'nationals',
-        key: 'id'
+        model: "nationals",
+        key: "id"
       }
     },
     range: {
       type: DataTypes.ENUM,
-      values: ['free', '15', '42', '100', '200'],
+      values: ["free", "15", "42", "100", "200"],
       allowNull: true,
-      defaultValue: 'free'
+      defaultValue: "free"
     },
     size_shirt: {
       type: DataTypes.STRING,
@@ -89,8 +89,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'hal_branches',
-        key: 'id'
+        model: "hal_branches",
+        key: "id"
       }
     },
     profile_image: {
@@ -114,8 +114,8 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'UserProfile',
-    tableName: 'user_profiles',
+    modelName: "UserProfile",
+    tableName: "user_profiles",
   });
   return UserProfile;
 };
