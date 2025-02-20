@@ -1,4 +1,4 @@
-import run_result from "../controllers/run_result. controller.js";
+import run_result from "../controllers/run_result.controller.js";
 import auth from "../middleware/auth.middleware";
 import role from "../middleware/role.middleware";
 import upload from "../utils/multer";
