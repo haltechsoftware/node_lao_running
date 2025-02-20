@@ -65,7 +65,7 @@ app.use((req, res, next) => {
   next(error);
 });
 
-app.use((error, req, res, next) => {
+app.use((error, req, res) => {
   console.log(error);
   if (error instanceof ValidationError) {
     return res.status(error.statusCode).json(error);

@@ -171,6 +171,7 @@ exports.findOneBranche = async (req, res, next) => {
   try {
     const id = req.params.id;
     const branches = await db.HalBranche.findByPk(id);
+    Response.success(res, Message.success._success, branches);
     throw new Error("ee");
   } catch (error) {
     next(error);
@@ -384,7 +385,7 @@ exports.findAllImage = async (req, res, next) => {
       return Response.success(res, Message.success._success, runImageData);
     }
 
-    runResultData = await db.RunResult.findAll({
+    const runResultData = await db.RunResult.findAll({
       order: [["id", "DESC"]],
     });
     return Response.success(res, Message.success._success, runResultData);
@@ -403,5 +404,10 @@ exports.findAllImage = async (req, res, next) => {
  */
 exports.getSumary = async (req, res, next) => {
   try {
-  } catch (error) {}
+    const sumary = await db.Sumary.findOne();
+
+    return Response.success(res, Message.success._success, sumary);
+  } catch (error) {
+    next(error);
+  }
 };

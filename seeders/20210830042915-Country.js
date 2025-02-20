@@ -2,7 +2,7 @@
 const Country = require("countries-list");
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
     const countryList = Country.countries;
     const nameList = [];
     Object.keys(countryList).map((key) => {
@@ -18,7 +18,7 @@ module.exports = {
     await queryInterface.bulkInsert("nationals", nameList, {});
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.bulkDelete("nationals", null, {});
   },
 };

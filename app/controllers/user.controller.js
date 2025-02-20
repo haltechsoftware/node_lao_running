@@ -8,7 +8,6 @@ import Message from "../helpers/message.helper";
 import Image from "../helpers/upload.helper";
 import createError from "http-errors";
 import Otp from "../helpers/otp.helper";
-import { create } from "qrcode";
 
 /**
  * Validate Step 1.

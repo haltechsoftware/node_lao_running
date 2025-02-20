@@ -2,7 +2,7 @@
 const axios = require("axios");
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
     // Seed Provices.
     const provinces = await axios.get(
       "https://hal.hal-logistics.la/api/v1/listing/provinces",
@@ -67,7 +67,7 @@ module.exports = {
     );
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async (queryInterface) => {
     await queryInterface.bulkDelete("provinces", null, {});
     await queryInterface.bulkDelete("districts", null, {});
     await queryInterface.bulkDelete("hal_branches", null, {});

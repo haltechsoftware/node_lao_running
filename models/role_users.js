@@ -1,6 +1,5 @@
 "use strict";
 import { Model } from "sequelize";
-import Message from "../app/helpers/message.helper";
 
 module.exports = (sequelize, DataTypes) => {
   class RoleUser extends Model {

@@ -26,9 +26,9 @@ exports.getCode = (params) => {
     ["02", mcid],
   ];
 
-  function padLeft(val) {
-    return val > 10 ? val : "0" + val;
-  }
+  // function padLeft(val) {
+  //   return val > 10 ? val : "0" + val;
+  // }
 
   function crc16(s) {
     var crc = 0xffff;

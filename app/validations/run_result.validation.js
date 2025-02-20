@@ -1,6 +1,4 @@
-import Status from "../helpers/status.helper";
 import Message from "../helpers/message.helper";
-import createError from "http-errors";
 
 exports.create = async (body) => {
   const errors = {};
@@ -19,7 +17,9 @@ exports.create = async (body) => {
 
     return errors;
   } catch (error) {
-    next(error);
+    console.log(error);
+
+    throw error;
   }
 
   function isInt(n) {

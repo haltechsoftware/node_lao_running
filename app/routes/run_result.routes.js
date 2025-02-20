@@ -3,7 +3,6 @@ import auth from "../middleware/auth.middleware";
 import role from "../middleware/role.middleware";
 import upload from "../utils/multer";
 import express from "express";
-import request from "../validations/run_result.validation";
 const router = express.Router();
 
 module.exports = (app) => {
