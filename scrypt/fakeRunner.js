@@ -64,7 +64,7 @@ function createPackageResult(count, pack, encryptedPassword) {
     });
 
 
-    let runnerResultFakers = [];
+    const runnerResultFakers = [];
     fakerBuilder.forEach(() => {
       runnerResultFakers.push(
         user.createRunResult({
@@ -83,8 +83,8 @@ function createPackageResult(count, pack, encryptedPassword) {
 
     Promise.all(runnerResultFakers).then((runnerResults) => {
       const summary = runnerResults.reduce((pre, curr) => {
-        let total_range = parseFloat(pre.total_range) + parseFloat(curr.dataValues.range);
-        let total_time = pre.total_time + curr.dataValues.time;
+        const total_range = parseFloat(pre.total_range) + parseFloat(curr.dataValues.range);
+        const total_time = pre.total_time + curr.dataValues.time;
         return {
           total_range,
           total_time,

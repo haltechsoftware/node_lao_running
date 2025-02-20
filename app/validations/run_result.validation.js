@@ -3,7 +3,7 @@ import Message from "../helpers/message.helper";
 import createError from "http-errors";
 
 exports.create = async (body) => {
-  let errors = {};
+  const errors = {};
   const {
     time,
     range

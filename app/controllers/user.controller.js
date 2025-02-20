@@ -21,7 +21,7 @@ import {
  * @returns \app\helpers\response.helper
  */
 exports.validateFirst = async (req, res, next) => {
-  let errors = {};
+  const errors = {};
 
   try {
 
@@ -67,7 +67,7 @@ exports.validateFirst = async (req, res, next) => {
  * @returns \app\helpers\response.helper
  */
 exports.validateSecond = async (req, res, next) => {
-  let errors = {};
+  const errors = {};
 
   try {
     const email = req.body.email;
@@ -153,7 +153,7 @@ exports.register = async (req, res, next) => {
       transaction: transaction
     });
 
-    let profile_image = req.file ? await Image.upload(req.file) : null;
+    const profile_image = req.file ? await Image.upload(req.file) : null;
 
     await user.createUserProfile({
       name: name,

@@ -20,7 +20,7 @@ exports.getCode = (params) => {
     return res;
   }
 
-  let field33 = [
+  const field33 = [
     ["00", "BCEL"],
     ["01", "ONEPAY"],
     ["02", mcid]
@@ -36,7 +36,7 @@ exports.getCode = (params) => {
 
     for (i = 0; i < s.length; i++) {
 
-      let c = s.charCodeAt(i);
+      const c = s.charCodeAt(i);
       if (c > 255) {
         throw new RangeError();
       }

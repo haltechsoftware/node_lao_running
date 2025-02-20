@@ -7,7 +7,7 @@ exports.generateRandomInvoiceId = async () => {
       invoice_id: randomId
     }
   });
-  if (sameId) generateRandomInvoiceId();
+  if (sameId) this.generateRandomInvoiceId();
 
   return randomId;
 };
@@ -19,7 +19,7 @@ exports.generateRandomTransactionId = async () => {
       transaction_id: randomId
     }
   });
-  if (sameId) generateRandomTransactionId();
+  if (sameId) this.generateRandomTransactionId();
 
   return randomId;
 };
@@ -31,7 +31,7 @@ exports.generateRandomTerminalId = async () => {
       terminal_id: randomId
     }
   });
-  if (sameId) generateRandomTerminalId();
+  if (sameId) this.generateRandomTerminalId();
 
   return randomId;
 };

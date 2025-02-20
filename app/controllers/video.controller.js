@@ -42,7 +42,7 @@ exports.index = async (req, res, next) => {
     ];
 
     if (per_page) {
-      let videoData = {};
+      const videoData = {};
       page = page && page > 0 ? page : 1;
 
       const video = await db.Video.findAndCountAll({

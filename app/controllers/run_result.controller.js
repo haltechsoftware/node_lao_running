@@ -18,7 +18,10 @@ exports.create = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
     const valid = await RunResultValid.create(req.body);
-    if (Object.keys(valid).length) return next(createError(Status.code.Validation, valid));
+    if (Object.keys(valid).length) {
+      await transaction.rollback();
+      return next(createError(Status.code.Validation, valid));
+    }
 
     const {
       time,

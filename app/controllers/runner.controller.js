@@ -27,9 +27,11 @@ exports.updateProfile = async (req, res, next) => {
       },
     });
 
-    if (!userProfile)
-      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
+    if (!userProfile){
+      await transaction.rollback();
 
+      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
+}
     const {
       name,
       surname,
@@ -154,7 +156,7 @@ exports.getProfile = async (req, res, next) => {
       }
     });
 
-    let resData = userProfile.dataValues;
+    const resData = userProfile.dataValues;
     resData.ranking = ranking;
     resData.package = userPackage;
 
@@ -298,6 +300,8 @@ exports.payBcelQr = async (req, res, next) => {
         }
       });
     } catch (error) {
+      console.log(error);
+      
       next(createError(Status.code.NotFound, Message.fail._notFound("transaction")));
     }
 
@@ -397,7 +401,7 @@ exports.getAllRunner = async (req, res, next) => {
     let page = Number.parseInt(req.query.page);
 
     if (per_page) {
-      let userProfileData = {};
+      const userProfileData = {};
       page = page && page > 0 ? page : 1;
 
       const userProfile = await db.UserProfile.findAndCountAll({

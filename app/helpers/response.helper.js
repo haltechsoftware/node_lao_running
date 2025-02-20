@@ -14,7 +14,7 @@ exports.success = (res, msg, data, code = 200) => {
 
 exports.error = (res, error) => {
   if (error.name === "SequelizeValidationError" || error.name === "SequelizeUniqueConstraintError") {
-    let resData = {
+    const resData = {
       error: true,
       code: Status.code.Validation,
       message: Message.fail._validation,
@@ -29,7 +29,7 @@ exports.error = (res, error) => {
   }
 
   if (error.message === "jwt malformed") {
-    let resData = {
+    const resData = {
       error: true,
       code: Status.code.AuthError,
       message: Message.fail._invalidToken,
@@ -42,7 +42,7 @@ exports.error = (res, error) => {
   }
 
   if (error.status === 422) {
-    let resData = {
+    const resData = {
       error: true,
       code: error.status,
       message: Message.fail._validation,
@@ -54,7 +54,7 @@ exports.error = (res, error) => {
   }
 
 
-  let resData = {
+  const resData = {
     error: true,
     code: error.status || 500,
     message: error.message,

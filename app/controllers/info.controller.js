@@ -32,7 +32,7 @@ exports.findAllPackage = async (req, res, next) => {
     }
 
     if (per_page) {
-      let packageData = {};
+      const packageData = {};
       page = page && page > 0 ? page : 1;
 
       const packages = await db.Package.findAndCountAll({
@@ -123,7 +123,7 @@ exports.findAllBranche = async (req, res, next) => {
     let page = Number.parseInt(req.query.page);
 
     if (per_page) {
-      let brancheData = {};
+      const brancheData = {};
       page = page && page > 0 ? page : 1;
 
       const branches = await db.HalBranche.findAndCountAll({
@@ -185,7 +185,7 @@ exports.findAllNation = async (req, res, next) => {
     let page = Number.parseInt(req.query.page);
 
     if (per_page) {
-      let nationData = {};
+      const nationData = {};
       page = page && page > 0 ? page : 1;
 
       const nations = await db.National.findAndCountAll({
@@ -301,7 +301,7 @@ exports.findAllRanking = async (req, res, next) => {
       return Response.success(res, Message.success._success, ranking);
     }
 
-    let rannkingData = {};
+    const rannkingData = {};
     page = page && page > 0 ? page : 1;
 
     const ranking = await db.Ranking.findAndCountAll({

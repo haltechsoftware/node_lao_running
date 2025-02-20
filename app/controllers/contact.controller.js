@@ -45,7 +45,7 @@ exports.index = async (req, res, next) => {
     ];
 
     if (per_page) {
-      let contactData = {};
+      const contactData = {};
       page = page && page > 0 ? page : 1;
 
       const contact = await db.Contact.findAndCountAll({
