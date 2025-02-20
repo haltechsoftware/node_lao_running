@@ -1,7 +1,5 @@
 "use strict";
-const {
-  Model
-} = require("sequelize");
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class National extends Model {
     /**
@@ -11,43 +9,46 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       National.hasMany(models.UserProfile, {
-        foreignKey: "national_id"
+        foreignKey: "national_id",
       });
     }
-  };
-  National.init({
-    name: {
-      type: DataTypes.STRING
+  }
+  National.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+      },
+      native: {
+        type: DataTypes.STRING,
+      },
+      phone: {
+        type: DataTypes.STRING,
+      },
+      currency: {
+        type: DataTypes.STRING,
+      },
+      continent: {
+        type: DataTypes.STRING,
+      },
+      capital: {
+        type: DataTypes.STRING,
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
     },
-    native: {
-      type: DataTypes.STRING
+    {
+      sequelize,
+      modelName: "National",
+      tableName: "nationals",
     },
-    phone: {
-      type: DataTypes.STRING
-    },
-    currency: {
-      type: DataTypes.STRING
-    },
-    continent: {
-      type: DataTypes.STRING
-    },
-    capital: {
-      type: DataTypes.STRING
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
-    },
-  }, {
-    sequelize,
-    modelName: "National",
-    tableName: "nationals",
-  });
+  );
   return National;
 };

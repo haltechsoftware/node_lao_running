@@ -1,7 +1,5 @@
 "use strict";
-const {
-  Model
-} = require("sequelize");
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class PackageRegisterReward extends Model {
     /**
@@ -13,35 +11,38 @@ module.exports = (sequelize, DataTypes) => {
       PackageRegisterReward.belongsTo(models.Package, {
         onDelete: "cascade",
         onUpdate: "cascade",
-        foreignKey: "package_id"
+        foreignKey: "package_id",
       });
     }
-  };
-  PackageRegisterReward.init({
-    package_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "packages",
-        key: "id"
+  }
+  PackageRegisterReward.init(
+    {
+      package_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "packages",
+          key: "id",
+        },
+      },
+      value_la: DataTypes.STRING,
+      value_en: DataTypes.STRING,
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
       },
     },
-    value_la: DataTypes.STRING,
-    value_en: DataTypes.STRING,
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
+    {
+      sequelize,
+      modelName: "PackageRegisterReward",
+      tableName: "package_register_rewards",
     },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
-    },
-  }, {
-    sequelize,
-    modelName: "PackageRegisterReward",
-    tableName: "package_register_rewards",
-  });
+  );
   return PackageRegisterReward;
 };

@@ -6,10 +6,10 @@ import createError from "http-errors";
 
 /**
  * Get Summary.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.summary = async (req, res, next) => {
@@ -26,19 +26,23 @@ exports.summary = async (req, res, next) => {
       where: condition,
       attributes: [
         "package_id",
-        [db.sequelize.fn("sum", db.sequelize.col("total")), "total_amount"]
+        [db.sequelize.fn("sum", db.sequelize.col("total")), "total_amount"],
       ],
       include: {
         model: db.Package,
-        attributes: ["id", "name", "price"]
+        attributes: ["id", "name", "price"],
       },
-      group: ["package_id"]
+      group: ["package_id"],
     });
 
     let total = 0;
-    summaryData.forEach(element => {
+    summaryData.forEach((element) => {
       total += parseInt(element.dataValues.total_amount);
-      console.log(total, element.dataValues.total_amount, parseInt(element.dataValues.total_amount));
+      console.log(
+        total,
+        element.dataValues.total_amount,
+        parseInt(element.dataValues.total_amount),
+      );
     });
 
     if (!package_id) {
@@ -48,7 +52,6 @@ exports.summary = async (req, res, next) => {
       return Response.success(res, Message.success._success, resData);
     }
     return Response.success(res, Message.success._success, summaryData);
-
   } catch (error) {
     next(error);
   }
@@ -56,21 +59,25 @@ exports.summary = async (req, res, next) => {
 
 /**
  * Get totalRange.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.totalRange = async (req, res, next) => {
   try {
     const totalRange = await db.Ranking.findAll({
-      attributes: [[db.sequelize.fn("sum", db.sequelize.col("total_range")), "total_range"],
-      [db.sequelize.fn("sum", db.sequelize.col("total_time")), "total_time"]]
+      attributes: [
+        [
+          db.sequelize.fn("sum", db.sequelize.col("total_range")),
+          "total_range",
+        ],
+        [db.sequelize.fn("sum", db.sequelize.col("total_time")), "total_time"],
+      ],
     });
 
     return Response.success(res, Message.success._success, totalRange);
-
   } catch (error) {
     next(error);
   }

@@ -1,16 +1,14 @@
 import db from "../../models";
-import {
-  Op
-} from "sequelize";
+import { Op } from "sequelize";
 import Response from "../helpers/response.helper";
 import Message from "../helpers/message.helper";
 
 /**
  * Get all Package.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findAllPackage = async (req, res, next) => {
@@ -23,8 +21,8 @@ exports.findAllPackage = async (req, res, next) => {
     if (req.user) {
       const userPackage = await db.UserPackage.findOne({
         where: {
-          user_id: req.user.user_id
-        }
+          user_id: req.user.user_id,
+        },
       });
       if (userPackage) {
         myPackage = await userPackage.getPackage();
@@ -39,13 +37,17 @@ exports.findAllPackage = async (req, res, next) => {
         limit: per_page,
         offset: (page - 1) * per_page,
         subQuery: false,
-        include: [{
-          model: db.PackageRegisterReward
-        }, {
-          model: db.PackageCompleteReward
-        }, {
-          model: db.PackageImage
-        }]
+        include: [
+          {
+            model: db.PackageRegisterReward,
+          },
+          {
+            model: db.PackageCompleteReward,
+          },
+          {
+            model: db.PackageImage,
+          },
+        ],
       });
 
       packageData.myPackage = myPackage;
@@ -54,28 +56,31 @@ exports.findAllPackage = async (req, res, next) => {
         total: packages.count,
         per_page: per_page,
         total_pages: Math.ceil(packages.count / per_page),
-        current_page: page
+        current_page: page,
       };
 
       return Response.success(res, Message.success._success, packageData);
     }
 
     const packages = await db.Package.findAll({
-      include: [{
-        model: db.PackageRegisterReward
-      }, {
-        model: db.PackageCompleteReward
-      }, {
-        model: db.PackageImage
-      }]
+      include: [
+        {
+          model: db.PackageRegisterReward,
+        },
+        {
+          model: db.PackageCompleteReward,
+        },
+        {
+          model: db.PackageImage,
+        },
+      ],
     });
     const data = {
       myPackage,
-      data: packages
+      data: packages,
     };
 
     return Response.success(res, Message.success._success, data);
-
   } catch (error) {
     next(error);
   }
@@ -83,27 +88,30 @@ exports.findAllPackage = async (req, res, next) => {
 
 /**
  * Get one Package.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findOnePackage = async (req, res, next) => {
   try {
     const id = req.params.id;
     const packages = await db.Package.findByPk(id, {
-      include: [{
-        model: db.PackageRegisterReward
-      }, {
-        model: db.PackageCompleteReward
-      }, {
-        model: db.PackageImage
-      }]
+      include: [
+        {
+          model: db.PackageRegisterReward,
+        },
+        {
+          model: db.PackageCompleteReward,
+        },
+        {
+          model: db.PackageImage,
+        },
+      ],
     });
 
     return Response.success(res, Message.success._success, packages);
-
   } catch (error) {
     next(error);
   }
@@ -111,10 +119,10 @@ exports.findOnePackage = async (req, res, next) => {
 
 /**
  * Get all Branche.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findAllBranche = async (req, res, next) => {
@@ -129,7 +137,7 @@ exports.findAllBranche = async (req, res, next) => {
       const branches = await db.HalBranche.findAndCountAll({
         limit: per_page,
         offset: (page - 1) * per_page,
-        subQuery: false
+        subQuery: false,
       });
 
       brancheData.data = branches.rows;
@@ -137,7 +145,7 @@ exports.findAllBranche = async (req, res, next) => {
         total: branches.count,
         per_page: per_page,
         total_pages: Math.ceil(branches.count / per_page),
-        current_page: page
+        current_page: page,
       };
 
       return Response.success(res, Message.success._success, brancheData);
@@ -153,10 +161,10 @@ exports.findAllBranche = async (req, res, next) => {
 
 /**
  * Get one Branche.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findOneBranche = async (req, res, next) => {
@@ -164,8 +172,6 @@ exports.findOneBranche = async (req, res, next) => {
     const id = req.params.id;
     const branches = await db.HalBranche.findByPk(id);
     throw new Error("ee");
-
-
   } catch (error) {
     next(error);
   }
@@ -173,10 +179,10 @@ exports.findOneBranche = async (req, res, next) => {
 
 /**
  * Get all Nation.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findAllNation = async (req, res, next) => {
@@ -191,7 +197,7 @@ exports.findAllNation = async (req, res, next) => {
       const nations = await db.National.findAndCountAll({
         limit: per_page,
         offset: (page - 1) * per_page,
-        subQuery: false
+        subQuery: false,
       });
 
       nationData.data = nations.rows;
@@ -199,7 +205,7 @@ exports.findAllNation = async (req, res, next) => {
         total: nations.count,
         per_page: per_page,
         total_pages: Math.ceil(nations.count / per_page),
-        current_page: page
+        current_page: page,
       };
 
       return Response.success(res, Message.success._success, nationData);
@@ -207,20 +213,18 @@ exports.findAllNation = async (req, res, next) => {
 
     const laos = await db.National.findAll({
       where: {
-        name: "Laos"
-      }
+        name: "Laos",
+      },
     });
     const nations = await db.National.findAll({
       where: {
         name: {
-          [Op.ne]: "Laos"
-        }
-      }
+          [Op.ne]: "Laos",
+        },
+      },
     });
 
-    const nationData = Object.assign(nations,
-      laos
-    );
+    const nationData = Object.assign(nations, laos);
 
     return Response.success(res, Message.success._success, nationData);
   } catch (error) {
@@ -230,10 +234,10 @@ exports.findAllNation = async (req, res, next) => {
 
 /**
  * Get one Nation.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findOneNation = async (req, res, next) => {
@@ -242,7 +246,6 @@ exports.findOneNation = async (req, res, next) => {
     const nation = await db.National.findByPk(id);
 
     return Response.success(res, Message.success._success, nation);
-
   } catch (error) {
     next(error);
   }
@@ -250,10 +253,10 @@ exports.findOneNation = async (req, res, next) => {
 
 /**
  * Get all Ranking.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findAllRanking = async (req, res, next) => {
@@ -263,40 +266,51 @@ exports.findAllRanking = async (req, res, next) => {
     let page = Number.parseInt(req.query.page);
     const rangeCondition = req.query.range
       ? {
-        range: req.query.range,
-      }
+          range: req.query.range,
+        }
       : null;
 
     const includeUser = [
       {
         model: db.UserProfile,
         required: true,
-        where: rangeCondition
-      }, {
+        where: rangeCondition,
+      },
+      {
         model: db.UserPackage,
         include: {
           model: db.Package,
         },
-      }];
+      },
+    ];
 
     const attributesOption = [
-      [db.sequelize.literal("(RANK() OVER (ORDER BY total_range DESC))"), "rank"], "id", "total_range", "total_time"
+      [
+        db.sequelize.literal("(RANK() OVER (ORDER BY total_range DESC))"),
+        "rank",
+      ],
+      "id",
+      "total_range",
+      "total_time",
     ];
     const includeOption = {
       model: db.User,
       required: true,
       attributes: ["id", "name", "email", "phone"],
-      include: includeUser
+      include: includeUser,
     };
-
 
     if (!per_page) {
       const ranking = await db.Ranking.findAll({
         attributes: attributesOption,
-        include: includeOption
+        include: includeOption,
       });
       if (bib)
-        return Response.success(res, Message.success._success, ranking.filter(item => item.User.UserProfile.bib == bib));
+        return Response.success(
+          res,
+          Message.success._success,
+          ranking.filter((item) => item.User.UserProfile.bib == bib),
+        );
 
       return Response.success(res, Message.success._success, ranking);
     }
@@ -309,7 +323,7 @@ exports.findAllRanking = async (req, res, next) => {
       offset: (page - 1) * per_page,
       subQuery: false,
       attributes: attributesOption,
-      include: includeOption
+      include: includeOption,
     });
 
     rannkingData.data = ranking.rows;
@@ -319,11 +333,9 @@ exports.findAllRanking = async (req, res, next) => {
       per_page: per_page,
       total_pages: Math.ceil(ranking.count / per_page),
       current_page: page,
-
     };
 
     return Response.success(res, Message.success._success, rannkingData);
-
   } catch (error) {
     next(error);
   }
@@ -331,10 +343,10 @@ exports.findAllRanking = async (req, res, next) => {
 
 /**
  * Get all Image.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.findAllImage = async (req, res, next) => {
@@ -346,25 +358,20 @@ exports.findAllImage = async (req, res, next) => {
 
     let runImages = await db.RunResult.findAll({
       where: {
-        status: "approve"
+        status: "approve",
       },
-      order: [
-        ["id", "DESC"]
-      ],
+      order: [["id", "DESC"]],
     });
     if (per_page) {
       page = page && page > 0 ? page : 1;
 
       const totalCount = Object.keys(runImages).length;
 
-
       runImages = await db.RunResult.findAll({
         limit: per_page,
         offset: (page - 1) * per_page,
         subQuery: false,
-        order: [
-          ["id", "DESC"]
-        ],
+        order: [["id", "DESC"]],
       });
       runImageData.data = runImages;
       runImageData.pagination = {
@@ -372,16 +379,13 @@ exports.findAllImage = async (req, res, next) => {
         per_page: per_page,
         total_pages: Math.ceil(totalCount / per_page),
         current_page: page,
-
       };
 
       return Response.success(res, Message.success._success, runImageData);
     }
 
     runResultData = await db.RunResult.findAll({
-      order: [
-        ["id", "DESC"]
-      ],
+      order: [["id", "DESC"]],
     });
     return Response.success(res, Message.success._success, runResultData);
   } catch (error) {
@@ -391,16 +395,13 @@ exports.findAllImage = async (req, res, next) => {
 
 /**
  * Get all sumary.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.getSumary = async (req, res, next) => {
   try {
-
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };

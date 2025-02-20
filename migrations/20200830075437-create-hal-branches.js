@@ -5,49 +5,49 @@ module.exports = {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       tel: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       prefix: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       lat: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       lng: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true,
       },
       district_id: {
         type: Sequelize.INTEGER,
         references: {
           model: "districts",
-          key: "id"
+          key: "id",
         },
       },
       createdAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
       updatedAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("hal_branches");
-  }
+  },
 };

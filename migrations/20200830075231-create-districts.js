@@ -5,29 +5,29 @@ module.exports = {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       province_id: {
         type: Sequelize.INTEGER,
         references: {
           model: "provinces",
-          key: "id"
+          key: "id",
         },
       },
       createdAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
       updatedAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("districts");
-  }
+  },
 };

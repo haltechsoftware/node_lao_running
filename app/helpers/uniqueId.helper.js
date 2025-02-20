@@ -4,8 +4,8 @@ exports.generateRandomInvoiceId = async () => {
   const randomId = require("crypto").randomBytes(5).toString("hex");
   const sameId = await db.UserPackage.findOne({
     where: {
-      invoice_id: randomId
-    }
+      invoice_id: randomId,
+    },
   });
   if (sameId) this.generateRandomInvoiceId();
 
@@ -16,8 +16,8 @@ exports.generateRandomTransactionId = async () => {
   const randomId = require("crypto").randomBytes(5).toString("hex");
   const sameId = await db.UserPackage.findOne({
     where: {
-      transaction_id: randomId
-    }
+      transaction_id: randomId,
+    },
   });
   if (sameId) this.generateRandomTransactionId();
 
@@ -28,8 +28,8 @@ exports.generateRandomTerminalId = async () => {
   const randomId = require("crypto").randomBytes(5).toString("hex");
   const sameId = await db.UserPackage.findOne({
     where: {
-      terminal_id: randomId
-    }
+      terminal_id: randomId,
+    },
   });
   if (sameId) this.generateRandomTerminalId();
 

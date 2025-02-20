@@ -8,7 +8,12 @@ const { ValidationError } = require("express-validation");
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:8080", "http://146.190.81.44", "http://146.190.81.44:3000", "https://running.kaiymuan.com"]
+  origin: [
+    "http://localhost:8080",
+    "http://146.190.81.44",
+    "http://146.190.81.44:3000",
+    "https://running.kaiymuan.com",
+  ],
 };
 
 app.use(cors(corsOptions));
@@ -17,9 +22,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({
-  extended: true
-}));
+app.use(
+  express.urlencoded({
+    extended: true,
+  }),
+);
 
 import admin from "./app/routes/admin_result.routes";
 admin(app);

@@ -9,40 +9,82 @@ import validation from "../validations/user.validation";
 
 const router = express.Router();
 
-module.exports = app => {
-      // Validate Step
-      router.post("/first-step", userValidate.firstStep, user.validateFirst);
-      router.post("/second-step", userValidate.secondStep, user.validateSecond);
+module.exports = (app) => {
+  // Validate Step
+  router.post("/first-step", userValidate.firstStep, user.validateFirst);
+  router.post("/second-step", userValidate.secondStep, user.validateSecond);
 
-      // Register User
-      router.post("/register", upload.single("profile_image"), userValidate.lastStep, user.register);
+  // Register User
+  router.post(
+    "/register",
+    upload.single("profile_image"),
+    userValidate.lastStep,
+    user.register,
+  );
 
-      // Register User
-      router.get("/is-unique", runner.isUnique);
+  // Register User
+  router.get("/is-unique", runner.isUnique);
 
-      // Update User Profile
-      router.post("/profile", auth, role.hasRole("User"), upload.single("profile_image"), runner.updateProfile);
+  // Update User Profile
+  router.post(
+    "/profile",
+    auth,
+    role.hasRole("User"),
+    upload.single("profile_image"),
+    runner.updateProfile,
+  );
 
-      // Get User Profile
-      router.get("/profile", auth, role.hasRole("User"), runner.getProfile);
+  // Get User Profile
+  router.get("/profile", auth, role.hasRole("User"), runner.getProfile);
 
-      // Get Bcel Qr
-      router.get("/payment/:packageId", auth, role.hasRole("User"), runner.getBcelQr);
+  // Get Bcel Qr
+  router.get(
+    "/payment/:packageId",
+    auth,
+    role.hasRole("User"),
+    runner.getBcelQr,
+  );
 
-      // Pay Bcel Qr
-      router.post("/payment/:packageId", auth, role.hasRole("User"), runner.payBcelQr);
+  // Pay Bcel Qr
+  router.post(
+    "/payment/:packageId",
+    auth,
+    role.hasRole("User"),
+    runner.payBcelQr,
+  );
 
-      // Update User Profile
-      router.post("/reward-location", auth, role.hasRole("User"), runner.updateUserLocation);
+  // Update User Profile
+  router.post(
+    "/reward-location",
+    auth,
+    role.hasRole("User"),
+    runner.updateUserLocation,
+  );
 
-      // Get All User Profile
-      router.get("/all", auth, role.hasRole(["Admin", "Super_Admin"]), runner.getAllRunner);
+  // Get All User Profile
+  router.get(
+    "/all",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    runner.getAllRunner,
+  );
 
-      // Get One User Profile
-      router.get("/:user_profile_id", auth, role.hasRole(["Admin", "Super_Admin"]), runner.getOneRunner);
+  // Get One User Profile
+  router.get(
+    "/:user_profile_id",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    runner.getOneRunner,
+  );
 
-      // Update range
-      router.post("/range", auth, role.hasRole("User"), validation.updateRange, user.updateRange);
+  // Update range
+  router.post(
+    "/range",
+    auth,
+    role.hasRole("User"),
+    validation.updateRange,
+    user.updateRange,
+  );
 
-      app.use("/api/runner", router);
+  app.use("/api/runner", router);
 };

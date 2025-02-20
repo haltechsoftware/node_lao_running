@@ -1,7 +1,5 @@
 "use strict";
-const {
-  Model
-} = require("sequelize");
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class PackageImage extends Model {
     /**
@@ -13,34 +11,37 @@ module.exports = (sequelize, DataTypes) => {
       PackageImage.belongsTo(models.Package, {
         onDelete: "cascade",
         onUpdate: "cascade",
-        foreignKey: "package_id"
+        foreignKey: "package_id",
       });
     }
-  };
-  PackageImage.init({
-    package_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "packages",
-        key: "id"
+  }
+  PackageImage.init(
+    {
+      package_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "packages",
+          key: "id",
+        },
+      },
+      value: DataTypes.STRING,
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
       },
     },
-    value: DataTypes.STRING,
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
+    {
+      sequelize,
+      modelName: "PackageImage",
+      tableName: "package_images",
     },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
-    },
-  }, {
-    sequelize,
-    modelName: "PackageImage",
-    tableName: "package_images",
-  });
+  );
   return PackageImage;
 };

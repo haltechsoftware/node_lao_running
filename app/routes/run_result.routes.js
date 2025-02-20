@@ -1,4 +1,4 @@
-import run_result from "../controllers/run_result.controller.js";
+import run_result from "../controllers/run_result. controller.js";
 import auth from "../middleware/auth.middleware";
 import role from "../middleware/role.middleware";
 import upload from "../utils/multer";
@@ -6,10 +6,15 @@ import express from "express";
 import request from "../validations/run_result.validation";
 const router = express.Router();
 
-module.exports = app => {
-
+module.exports = (app) => {
   // Create a new run_result
-  router.post("/", auth, role.hasRole("User"), upload.single("image"), run_result.create);
+  router.post(
+    "/",
+    auth,
+    role.hasRole("User"),
+    upload.single("image"),
+    run_result.create,
+  );
 
   // Retrieve all run_results
   router.get("/", auth, run_result.findAll);

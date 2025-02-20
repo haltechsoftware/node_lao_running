@@ -6,30 +6,30 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "users",
-          key: "id"
+          key: "id",
         },
-        onDelete: "cascade"
+        onDelete: "cascade",
       },
       approved_by: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
           model: "users",
-          key: "id"
+          key: "id",
         },
-        onDelete: "cascade"
+        onDelete: "cascade",
       },
       status: {
         type: Sequelize.ENUM("pending", "approve", "reject"),
         allowNull: false,
-        defaultValue: "pending"
+        defaultValue: "pending",
       },
       reject_description: {
         type: Sequelize.TEXT,
@@ -38,11 +38,11 @@ module.exports = {
 
       range: {
         type: Sequelize.DOUBLE,
-        allowNull: false
+        allowNull: false,
       },
       time: {
         type: Sequelize.DOUBLE,
-        allowNull: false
+        allowNull: false,
       },
       image: {
         type: Sequelize.STRING,
@@ -54,15 +54,15 @@ module.exports = {
       },
       createdAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
       updatedAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("run_results");
-  }
+  },
 };

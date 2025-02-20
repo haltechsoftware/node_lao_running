@@ -28,7 +28,7 @@ exports.fail = {
 };
 
 exports.serverError = {
-  _serverError: "some thing when wrong."
+  _serverError: "some thing when wrong.",
 };
 
 exports.validation = (validationCase, key, value = null) => {

@@ -7,7 +7,7 @@ exports.code = {
   AuthError: 401,
   NotFound: 404,
   ServerError: 500,
-  Validation: 422
+  Validation: 422,
 };
 
 exports.userPackageStatus = {

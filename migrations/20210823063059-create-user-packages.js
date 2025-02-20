@@ -6,34 +6,34 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "users",
-          key: "id"
+          key: "id",
         },
-        onDelete: "cascade"
+        onDelete: "cascade",
       },
       package_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "packages",
-          key: "id"
+          key: "id",
         },
       },
       total: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        defaultValue: 0
+        defaultValue: 0,
       },
       status: {
         type: Sequelize.ENUM("pending", "success"),
         allowNull: false,
-        defaultValue: "pending"
+        defaultValue: "pending",
       },
       invoice_id: {
         type: Sequelize.STRING,
@@ -53,15 +53,15 @@ module.exports = {
 
       createdAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
       updatedAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("user_packages");
-  }
+  },
 };

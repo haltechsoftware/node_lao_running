@@ -1,7 +1,5 @@
 "use strict";
-const {
-  Model
-} = require("sequelize");
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class HalBranche extends Model {
     /**
@@ -13,66 +11,69 @@ module.exports = (sequelize, DataTypes) => {
       HalBranche.belongsTo(models.District, {
         onDelete: "cascade",
         onUpdate: "cascade",
-        foreignKey: "district_id"
+        foreignKey: "district_id",
       });
       HalBranche.hasMany(models.UserProfile, {
         onDelete: "cascade",
         onUpdate: "cascade",
-        foreignKey: "hal_branche_id"
+        foreignKey: "hal_branche_id",
       });
     }
-  };
-  HalBranche.init({
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
-    },
-    name: {
-      type: DataTypes.STRING
-    },
-    tel: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    prefix: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    lat: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    lng: {
-      type: DataTypes.STRING,
-      allowNull: true
-    },
-    district_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: "districts",
-        key: "id"
+  }
+  HalBranche.init(
+    {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      name: {
+        type: DataTypes.STRING,
+      },
+      tel: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      prefix: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      lat: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      lng: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      district_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "districts",
+          key: "id",
+        },
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
       },
     },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
+    {
+      sequelize,
+      modelName: "HalBranche",
+      tableName: "hal_branches",
     },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
-    },
-  }, {
-    sequelize,
-    modelName: "HalBranche",
-    tableName: "hal_branches",
-  });
+  );
   return HalBranche;
 };

@@ -16,13 +16,18 @@ const storage = multer.diskStorage({
   },
 
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
-  }
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname),
+    );
+  },
 });
 
 const fileFilter = (req, file, cb) => {
   const validFileTypes = /jpg|jpeg|png/;
-  const extname = validFileTypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = validFileTypes.test(
+    path.extname(file.originalname).toLowerCase(),
+  );
 
   if (extname) {
     return cb(null, true);
@@ -33,5 +38,5 @@ const fileFilter = (req, file, cb) => {
 
 module.exports = multer({
   storage: storage,
-  fileFilter: fileFilter
+  fileFilter: fileFilter,
 });

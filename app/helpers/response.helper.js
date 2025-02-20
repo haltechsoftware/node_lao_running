@@ -13,7 +13,10 @@ exports.success = (res, msg, data, code = 200) => {
 };
 
 exports.error = (res, error) => {
-  if (error.name === "SequelizeValidationError" || error.name === "SequelizeUniqueConstraintError") {
+  if (
+    error.name === "SequelizeValidationError" ||
+    error.name === "SequelizeUniqueConstraintError"
+  ) {
     const resData = {
       error: true,
       code: Status.code.Validation,
@@ -34,7 +37,7 @@ exports.error = (res, error) => {
       code: Status.code.AuthError,
       message: Message.fail._invalidToken,
       data: {
-        message: error.message
+        message: error.message,
       },
     };
 
@@ -46,20 +49,18 @@ exports.error = (res, error) => {
       error: true,
       code: error.status,
       message: Message.fail._validation,
-      data: error
-
+      data: error,
     };
 
     return res.status(resData.code).json(resData);
   }
-
 
   const resData = {
     error: true,
     code: error.status || 500,
     message: error.message,
     data: {
-      message: error.message
+      message: error.message,
     },
   };
   return res.status(resData.code).json(resData);

@@ -1,7 +1,5 @@
 "use strict";
-const {
-  Model
-} = require("sequelize");
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Province extends Model {
     /**
@@ -11,26 +9,29 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Province.hasMany(models.District, {
-        foreignKey: "provice_id"
+        foreignKey: "provice_id",
       });
     }
-  };
-  Province.init({
-    name: DataTypes.STRING,
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
+  }
+  Province.init(
+    {
+      name: DataTypes.STRING,
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
     },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
+    {
+      sequelize,
+      modelName: "Province",
+      tableName: "provinces",
     },
-  }, {
-    sequelize,
-    modelName: "Province",
-    tableName: "provinces",
-  });
+  );
   return Province;
 };

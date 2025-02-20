@@ -1,8 +1,5 @@
 "use strict";
-import {
-  Model
-}
-  from "sequelize";
+import { Model } from "sequelize";
 import Message from "../app/helpers/message.helper";
 
 module.exports = (sequelize, DataTypes) => {
@@ -14,35 +11,38 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       RoleUser.belongsTo(models.User, {
-        foreignKey: "user_id"
+        foreignKey: "user_id",
       });
       RoleUser.belongsTo(models.Role, {
-        foreignKey: "role_id"
+        foreignKey: "role_id",
       });
     }
-  };
-  RoleUser.init({
-    user_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "users",
-        key: "id"
+  }
+  RoleUser.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
+      role_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "roles",
+          key: "id",
+        },
       },
     },
-    role_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "roles",
-        key: "id"
-      },
+    {
+      sequelize,
+      modelName: "RoleUser",
+      tableName: "role_users",
+      timestamps: false,
     },
-  }, {
-    sequelize,
-    modelName: "RoleUser",
-    tableName: "role_users",
-    timestamps: false
-  });
+  );
   return RoleUser;
 };

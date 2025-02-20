@@ -4,7 +4,9 @@ const axios = require("axios");
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Seed Provices.
-    const provinces = await axios.get("https://hal.hal-logistics.la/api/v1/listing/provinces");
+    const provinces = await axios.get(
+      "https://hal.hal-logistics.la/api/v1/listing/provinces",
+    );
     const provinceLists = [];
     provinces.data.map((province) => {
       provinceLists.push({
@@ -15,7 +17,9 @@ module.exports = {
     await queryInterface.bulkInsert("provinces", provinceLists, {});
 
     // Seed Districts.
-    const districts = await axios.get("https://hal.hal-logistics.la/api/v1/listing/districts");
+    const districts = await axios.get(
+      "https://hal.hal-logistics.la/api/v1/listing/districts",
+    );
     const districtLists = [];
     districts.data.map((district) => {
       districtLists.push({
@@ -27,7 +31,9 @@ module.exports = {
     await queryInterface.bulkInsert("districts", districtLists, {});
 
     // Seed HalBranches.
-    const branches = await axios.get("https://hal.hal-logistics.la/api/v1/listing/branches");
+    const branches = await axios.get(
+      "https://hal.hal-logistics.la/api/v1/listing/branches",
+    );
     const brancheLists = [];
     branches.data.map((branche) => {
       brancheLists.push({
@@ -43,24 +49,27 @@ module.exports = {
     });
 
     await queryInterface.bulkInsert("hal_branches", brancheLists, {});
-    await queryInterface.bulkInsert("hal_branches", [{
-      id: 1000,
-      name: "EVO Store",
-      tel: "",
-      email: "",
-      prefix: "",
-      lat: "",
-      lng: "",
-      district_id: 88,
-    }], {});
-
+    await queryInterface.bulkInsert(
+      "hal_branches",
+      [
+        {
+          id: 1000,
+          name: "EVO Store",
+          tel: "",
+          email: "",
+          prefix: "",
+          lat: "",
+          lng: "",
+          district_id: 88,
+        },
+      ],
+      {},
+    );
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.bulkDelete("provinces", null, {});
     await queryInterface.bulkDelete("districts", null, {});
     await queryInterface.bulkDelete("hal_branches", null, {});
-
-
-  }
+  },
 };

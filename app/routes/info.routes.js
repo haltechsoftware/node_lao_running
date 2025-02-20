@@ -4,7 +4,7 @@ import semiAuth from "../middleware/semiAuth.middleware";
 
 const router = express.Router();
 
-module.exports = app => {
+module.exports = (app) => {
   // Get all Package.
   router.get("/package", semiAuth, info.findAllPackage);
 
@@ -25,7 +25,6 @@ module.exports = app => {
 
   // Get all Ranking.
   router.get("/ranking/", info.findAllRanking);
-
 
   // Get all Images.
   router.get("/image/", info.findAllImage);

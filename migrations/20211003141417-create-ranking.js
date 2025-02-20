@@ -6,38 +6,38 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       user_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "users",
-          key: "id"
+          key: "id",
         },
-        onDelete: "cascade"
+        onDelete: "cascade",
       },
       total_range: {
         type: Sequelize.DOUBLE,
         defaultValue: 0,
-        allowNull: false
+        allowNull: false,
       },
       total_time: {
         type: Sequelize.DOUBLE,
         defaultValue: 0,
-        allowNull: false
+        allowNull: false,
       },
       createdAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
       updatedAt: {
         type: Sequelize.DATE,
-        default: Sequelize.CURRENT_TIMESTAMP
+        default: Sequelize.CURRENT_TIMESTAMP,
       },
     });
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("rankings");
-  }
+  },
 };

@@ -5,7 +5,7 @@ import role from "../middleware/role.middleware";
 
 const router = express.Router();
 
-module.exports = app => {
+module.exports = (app) => {
   // Get summary
   router.get("", auth, role.hasRole(["Admin", "Super_Admin"]), summary.summary);
 

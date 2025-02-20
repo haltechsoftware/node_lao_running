@@ -1,7 +1,5 @@
 "use strict";
-const {
-  Model
-} = require("sequelize");
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class District extends Model {
     /**
@@ -13,41 +11,44 @@ module.exports = (sequelize, DataTypes) => {
       District.belongsTo(models.Province, {
         onDelete: "cascade",
         onUpdate: "cascade",
-        foreignKey: "province_id"
+        foreignKey: "province_id",
       });
     }
-  };
-  District.init({
-    id: {
-      allowNull: false,
-      autoIncrement: true,
-      primaryKey: true,
-      type: DataTypes.INTEGER
-    },
-    name: {
-      type: DataTypes.STRING
-    },
-    province_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: "provinces",
-        key: "id"
+  }
+  District.init(
+    {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      name: {
+        type: DataTypes.STRING,
+      },
+      province_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "provinces",
+          key: "id",
+        },
+      },
+      createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
+      },
+      updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        default: DataTypes.CURRENT_TIMESTAMP,
       },
     },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
+    {
+      sequelize,
+      modelName: "District",
+      tableName: "districts",
     },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      default: DataTypes.CURRENT_TIMESTAMP
-    },
-  }, {
-    sequelize,
-    modelName: "District",
-    tableName: "districts",
-  });
+  );
   return District;
 };

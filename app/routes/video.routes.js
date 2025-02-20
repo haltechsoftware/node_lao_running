@@ -6,11 +6,22 @@ import validation from "../validations/video.validation";
 
 const router = express.Router();
 
-module.exports = app => {
+module.exports = (app) => {
   // Create video
-  router.post("", auth, role.hasRole(["Admin", "Super_Admin"]), validation.store, video.store);
+  router.post(
+    "",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    validation.store,
+    video.store,
+  );
   // Delete video
-  router.delete("/:id", auth, role.hasRole(["Admin", "Super_Admin"]), video.destroy);
+  router.delete(
+    "/:id",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    video.destroy,
+  );
   // Get a video
   router.get("/:id", video.show);
   // Get video

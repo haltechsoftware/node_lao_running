@@ -11,37 +11,39 @@ import axios from "axios";
 
 /**
  * Update User Profile.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.updateProfile = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
-
     const userProfile = await db.UserProfile.findOne({
       where: {
-        user_id: req.user.user_id
+        user_id: req.user.user_id,
       },
     });
 
-    if (!userProfile){
+    if (!userProfile) {
       await transaction.rollback();
 
-      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
-}
-    const {
-      name,
-      surname,
-      gender,
-      dob,
-      national_id,
-    } = req.body;
+      next(
+        createError(
+          Status.code.NotFound,
+          Message.fail._notFound("user_profile"),
+        ),
+      );
+    }
+    const { name, surname, gender, dob, national_id } = req.body;
 
-    let profile_image = userProfile.profile_image ? userProfile.profile_image : null;
-    let profile_image_id = userProfile.profile_image_id ? userProfile.profile_image_id : null;
+    let profile_image = userProfile.profile_image
+      ? userProfile.profile_image
+      : null;
+    let profile_image_id = userProfile.profile_image_id
+      ? userProfile.profile_image_id
+      : null;
 
     if (req.file) {
       if (profile_image && profile_image_id) {
@@ -52,22 +54,23 @@ exports.updateProfile = async (req, res, next) => {
       profile_image = cloudImage.secure_url;
     }
 
-    const updateData = await userProfile.update({
-      name,
-      surname,
-      gender,
-      dob,
-      national_id,
-      profile_image_id,
-      profile_image: profile_image
-    }, {
-      transaction: transaction,
-    });
-
+    const updateData = await userProfile.update(
+      {
+        name,
+        surname,
+        gender,
+        dob,
+        national_id,
+        profile_image_id,
+        profile_image: profile_image,
+      },
+      {
+        transaction: transaction,
+      },
+    );
 
     await transaction.commit();
     return Response.success(res, Message.success._success, updateData);
-
   } catch (error) {
     await transaction.rollback();
     next(error);
@@ -76,20 +79,24 @@ exports.updateProfile = async (req, res, next) => {
 
 /**
  * Update User Location.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.updateUserLocation = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
-
     const userProfile = await req.auth.getUserProfile();
 
     if (!userProfile)
-      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
+      next(
+        createError(
+          Status.code.NotFound,
+          Message.fail._notFound("user_profile"),
+        ),
+      );
 
     let hal_branche_id = req.body.hal_branche_id;
     const size = req.body.size;
@@ -97,26 +104,32 @@ exports.updateUserLocation = async (req, res, next) => {
     if (!hal_branche_id) {
       const Evo = await db.HalBranche.findOne({
         where: {
-          name: "EVO Store"
-        }
+          name: "EVO Store",
+        },
       });
       if (!Evo)
-        next(createError(Status.code.NotFound, Message.fail._notFound("evo_store")));
+        next(
+          createError(
+            Status.code.NotFound,
+            Message.fail._notFound("evo_store"),
+          ),
+        );
 
       hal_branche_id = Evo.id;
     }
 
-    const updateData = await userProfile.update({
-      hal_branche_id,
-      size_shirt: size
-    }, {
-      transaction: transaction,
-    });
-
+    const updateData = await userProfile.update(
+      {
+        hal_branche_id,
+        size_shirt: size,
+      },
+      {
+        transaction: transaction,
+      },
+    );
 
     await transaction.commit();
     return Response.success(res, Message.success._success, updateData);
-
   } catch (error) {
     await transaction.rollback();
     next(error);
@@ -125,35 +138,40 @@ exports.updateUserLocation = async (req, res, next) => {
 
 /**
  * Get User Profile.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.getProfile = async (req, res, next) => {
   try {
     const userProfile = await db.UserProfile.findOne({
       where: {
-        user_id: req.user.user_id
+        user_id: req.user.user_id,
       },
       include: {
-        model: db.HalBranche
-      }
+        model: db.HalBranche,
+      },
     });
     if (!userProfile)
-      next(createError(Status.code.NotFound, Message.fail._notFound("user_profile")));
+      next(
+        createError(
+          Status.code.NotFound,
+          Message.fail._notFound("user_profile"),
+        ),
+      );
 
     const ranking = await req.auth.getRanking({
-      attributes: ["total_range", "total_time"]
+      attributes: ["total_range", "total_time"],
     });
 
     const userPackage = await req.auth.getUserPackage({
       attributes: ["package_id", "status", "transaction_id"],
       include: {
         model: db.Package,
-        attributes: ["name"]
-      }
+        attributes: ["name"],
+      },
     });
 
     const resData = userProfile.dataValues;
@@ -161,7 +179,6 @@ exports.getProfile = async (req, res, next) => {
     resData.package = userPackage;
 
     return Response.success(res, Message.success._success, resData);
-
   } catch (error) {
     next(error);
   }
@@ -169,10 +186,10 @@ exports.getProfile = async (req, res, next) => {
 
 /**
  * Check Phone Number unique.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.isUnique = async (req, res, next) => {
@@ -180,22 +197,21 @@ exports.isUnique = async (req, res, next) => {
     const phone = req.query.phone ? req.query.phone : null;
 
     if (phone < 8)
-      next(createError(Status.code.Validation, {
-        phone: Message.validation("min", "phone", 8)
-      }));
+      next(
+        createError(Status.code.Validation, {
+          phone: Message.validation("min", "phone", 8),
+        }),
+      );
 
     const user = await db.User.findOne({
       where: {
-        phone: phone
-      }
+        phone: phone,
+      },
     });
 
-    if (!user)
-      return Response.success(res, Message.success._success, true);
+    if (!user) return Response.success(res, Message.success._success, true);
 
     return Response.success(res, Message.success._success, false);
-
-
   } catch (error) {
     next(error);
   }
@@ -203,21 +219,27 @@ exports.isUnique = async (req, res, next) => {
 
 /**
  * Get Bcel Qr.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.getBcelQr = async (req, res, next) => {
   const transaction = await db.sequelize.transaction();
   try {
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
-    if (!runnerPackage) return next(createError(Status.code.NotFound, Message.fail._notFound("runner_package")));
+    if (!runnerPackage)
+      return next(
+        createError(
+          Status.code.NotFound,
+          Message.fail._notFound("runner_package"),
+        ),
+      );
 
     let userPackage = await db.UserPackage.findOne({
       where: {
-        user_id: req.user.user_id
+        user_id: req.user.user_id,
       },
     });
 
@@ -225,30 +247,38 @@ exports.getBcelQr = async (req, res, next) => {
      * @overide  userPackage
      */
     if (!userPackage) {
-      userPackage = await runnerPackage.createUserPackage({
-        total: runnerPackage.price,
-        user_id: req.user.user_id,
-        transaction_id: await UniqueId.generateRandomTransactionId(),
-        invoice_id: await UniqueId.generateRandomInvoiceId(),
-        terminal_id: await UniqueId.generateRandomTerminalId(),
-      }, {
-        transaction: transaction
-      });
+      userPackage = await runnerPackage.createUserPackage(
+        {
+          total: runnerPackage.price,
+          user_id: req.user.user_id,
+          transaction_id: await UniqueId.generateRandomTransactionId(),
+          invoice_id: await UniqueId.generateRandomInvoiceId(),
+          terminal_id: await UniqueId.generateRandomTerminalId(),
+        },
+        {
+          transaction: transaction,
+        },
+      );
     }
 
     if (userPackage.status == "pending") {
-      await userPackage.update({
-        package_id: runnerPackage.id,
-        total: runnerPackage.price,
-      }, {
-        transaction: transaction
-      });
+      await userPackage.update(
+        {
+          package_id: runnerPackage.id,
+          total: runnerPackage.price,
+        },
+        {
+          transaction: transaction,
+        },
+      );
 
       const data = {
         transactionid: userPackage.transaction_id,
         invoiceid: userPackage.invoice_id,
         terminalid: userPackage.terminal_id,
-        description: Message.description._paymentDescription(runnerPackage.name),
+        description: Message.description._paymentDescription(
+          runnerPackage.name,
+        ),
         amount: runnerPackage.price,
       };
 
@@ -264,7 +294,7 @@ exports.getBcelQr = async (req, res, next) => {
         invoice_id: userPackage.invoice_id,
         terminal_id: userPackage.terminal_id,
         qr_number: qr_number,
-        payment_qr: qr
+        payment_qr: qr,
       };
 
       await transaction.commit();
@@ -280,10 +310,10 @@ exports.getBcelQr = async (req, res, next) => {
 
 /**
  * Pay Bcel Qr.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.payBcelQr = async (req, res, next) => {
@@ -293,50 +323,68 @@ exports.payBcelQr = async (req, res, next) => {
 
     let bcelTransaction;
     try {
-      bcelTransaction = await axios.get("https://bcel.la:8083/onepay/gettransaction.php", {
-        params: {
-          mcid: process.env.BCEL_MCID_V2,
-          uuid: transaction_id,
-        }
-      });
+      bcelTransaction = await axios.get(
+        "https://bcel.la:8083/onepay/gettransaction.php",
+        {
+          params: {
+            mcid: process.env.BCEL_MCID_V2,
+            uuid: transaction_id,
+          },
+        },
+      );
     } catch (error) {
       console.log(error);
-      
-      next(createError(Status.code.NotFound, Message.fail._notFound("transaction")));
+
+      next(
+        createError(
+          Status.code.NotFound,
+          Message.fail._notFound("transaction"),
+        ),
+      );
     }
 
     const payment = await db.UserPackage.findOne({
       where: {
-        user_id: req.user.user_id
-      }
+        user_id: req.user.user_id,
+      },
     });
-    if (!payment) return next(createError(Status.code.NotFound, Message.fail._notFound("payment")));
-    if (payment.status == "success") return next(createError(Status.code.BadRequest, payment));
+    if (!payment)
+      return next(
+        createError(Status.code.NotFound, Message.fail._notFound("payment")),
+      );
+    if (payment.status == "success")
+      return next(createError(Status.code.BadRequest, payment));
 
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
-    if (!runnerPackage) return next(createError(Status.code.NotFound, Message.fail._notFound("package")));
+    if (!runnerPackage)
+      return next(
+        createError(Status.code.NotFound, Message.fail._notFound("package")),
+      );
 
-    const paid = await payment.update({
-      ticket_id: bcelTransaction.data.ticket,
-      package_id: runnerPackage.id,
-      total: runnerPackage.price,
-      status: "success",
-    }, {
-      transaction: transaction
-    });
+    const paid = await payment.update(
+      {
+        ticket_id: bcelTransaction.data.ticket,
+        package_id: runnerPackage.id,
+        total: runnerPackage.price,
+        status: "success",
+      },
+      {
+        transaction: transaction,
+      },
+    );
 
-    await req.auth.update({
-      package_id: runnerPackage.id,
-    }, {
-      transaction: transaction
-    });
+    await req.auth.update(
+      {
+        package_id: runnerPackage.id,
+      },
+      {
+        transaction: transaction,
+      },
+    );
 
     await transaction.commit();
 
-
-
     return Response.success(res, Message.success._success, paid);
-
   } catch (error) {
     await transaction.rollback();
     next(error);
@@ -345,10 +393,10 @@ exports.payBcelQr = async (req, res, next) => {
 
 /**
  * Get all runner.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.getAllRunner = async (req, res, next) => {
@@ -356,45 +404,52 @@ exports.getAllRunner = async (req, res, next) => {
     const bib = req.query.bib;
     const package_runner = req.query.package_runner;
 
-    const condition = bib ? {
-      bib: bib
-    } : null;
+    const condition = bib
+      ? {
+          bib: bib,
+        }
+      : null;
 
     let package_runnerCondition = null;
 
     if (package_runner) {
-      package_runnerCondition = package_runner == "free" ? {
-        package_id: null
-      } : {
-        package_id: package_runner
-      };
+      package_runnerCondition =
+        package_runner == "free"
+          ? {
+              package_id: null,
+            }
+          : {
+              package_id: package_runner,
+            };
     }
 
-    const include = [{
-      model: db.HalBranche,
-    },
-    {
-      model: db.User,
-      where: package_runnerCondition,
-      required: true,
-      attributes: ["id", "name", "email", "phone"],
-      include: [{
-        model: db.Ranking,
-        attributes: ["total_range", "total_time"]
-      }, {
-        model: db.UserPackage,
-        attributes: ["package_id", "status", "transaction_id"],
-        include: {
-          model: db.Package,
-          attributes: ["name"]
-        }
-      }]
-    },
+    const include = [
+      {
+        model: db.HalBranche,
+      },
+      {
+        model: db.User,
+        where: package_runnerCondition,
+        required: true,
+        attributes: ["id", "name", "email", "phone"],
+        include: [
+          {
+            model: db.Ranking,
+            attributes: ["total_range", "total_time"],
+          },
+          {
+            model: db.UserPackage,
+            attributes: ["package_id", "status", "transaction_id"],
+            include: {
+              model: db.Package,
+              attributes: ["name"],
+            },
+          },
+        ],
+      },
     ];
 
-    const orderCondition = [
-      ["id", "DESC"]
-    ];
+    const orderCondition = [["id", "DESC"]];
 
     // Pagiate
     const per_page = Number.parseInt(req.query.per_page);
@@ -410,7 +465,7 @@ exports.getAllRunner = async (req, res, next) => {
         order: orderCondition,
         limit: per_page,
         offset: (page - 1) * per_page,
-        subQuery: false
+        subQuery: false,
       });
 
       userProfileData.data = userProfile.rows;
@@ -418,7 +473,7 @@ exports.getAllRunner = async (req, res, next) => {
         total: userProfile.count,
         per_page: per_page,
         total_pages: Math.ceil(userProfile.count / per_page),
-        current_page: page
+        current_page: page,
       };
       return Response.success(res, Message.success._success, userProfileData);
     }
@@ -426,11 +481,10 @@ exports.getAllRunner = async (req, res, next) => {
     const userProfile = await db.UserProfile.findAll({
       where: condition,
       include: include,
-      order: orderCondition
+      order: orderCondition,
     });
 
     return Response.success(res, Message.success._success, userProfile);
-
   } catch (error) {
     next(error);
   }
@@ -438,43 +492,45 @@ exports.getAllRunner = async (req, res, next) => {
 
 /**
  * Get a runner.
- * 
- * @param {*} req 
- * @param {*} res 
- * 
+ *
+ * @param {*} req
+ * @param {*} res
+ *
  * @returns \app\helpers\response.helper
  */
 exports.getOneRunner = async (req, res, next) => {
   try {
-
     const id = req.params.user_profile_id;
 
     const userProfile = await db.UserProfile.findOne({
       where: { id: id },
-      include: [{
-        model: db.HalBranche,
-      },
-      {
-        model: db.User,
-        required: true,
-        attributes: ["id", "name", "email", "phone"],
-        include: [{
-          model: db.Ranking,
-          attributes: ["total_range", "total_time"]
-        }, {
-          model: db.UserPackage,
-          attributes: ["package_id", "status", "transaction_id"],
-          include: {
-            model: db.Package,
-            attributes: ["name"]
-          }
-        }]
-      },
+      include: [
+        {
+          model: db.HalBranche,
+        },
+        {
+          model: db.User,
+          required: true,
+          attributes: ["id", "name", "email", "phone"],
+          include: [
+            {
+              model: db.Ranking,
+              attributes: ["total_range", "total_time"],
+            },
+            {
+              model: db.UserPackage,
+              attributes: ["package_id", "status", "transaction_id"],
+              include: {
+                model: db.Package,
+                attributes: ["name"],
+              },
+            },
+          ],
+        },
       ],
     });
 
     return Response.success(res, Message.success._success, userProfile);
-
   } catch (error) {
     next(error);
   }

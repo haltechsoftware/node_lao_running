@@ -6,13 +6,23 @@ import validation from "../validations/contact.validation";
 
 const router = express.Router();
 
-module.exports = app => {
+module.exports = (app) => {
   // Create contact
   router.post("", validation.store, contact.store);
   // Delete contact
-  router.delete("/:id", auth, role.hasRole(["Admin", "Super_Admin"]), contact.destroy);
+  router.delete(
+    "/:id",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    contact.destroy,
+  );
   // Get a contact
-  router.get("/:id", auth, role.hasRole(["Admin", "Super_Admin"]), contact.show);
+  router.get(
+    "/:id",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    contact.show,
+  );
   // Get contact
   router.get("", auth, role.hasRole(["Admin", "Super_Admin"]), contact.index);
 

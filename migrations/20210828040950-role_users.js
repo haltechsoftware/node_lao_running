@@ -8,23 +8,23 @@ module.exports = {
         allowNull: false,
         references: {
           model: "users",
-          key: "id"
+          key: "id",
         },
-        onDelete: "cascade"
+        onDelete: "cascade",
       },
       role_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "roles",
-          key: "id"
+          key: "id",
         },
-        onDelete: "cascade"
+        onDelete: "cascade",
       },
     });
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("role_users");
-  }
+  },
 };

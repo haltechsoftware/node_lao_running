@@ -5,25 +5,19 @@ import fs from "fs";
 exports.upload = async (file) => {
   try {
     let cloudImage;
-    const {
-      filename: image,
-      destination: destination,
-    } = file;
+    const { filename: image, destination: destination } = file;
 
     const originalImage = destination + image;
     const resizedImage = destination + "temp_" + image;
 
     await Sharp(originalImage)
       .resize({
-        width: 720
+        width: 720,
       })
       .jpeg({
-        quality: 90
+        quality: 90,
       })
-      .toFile(
-        resizedImage
-      );
-
+      .toFile(resizedImage);
 
     cloudImage = await Cloudinary.uploader.upload(resizedImage);
 
@@ -34,7 +28,6 @@ exports.upload = async (file) => {
   } catch (error) {
     throw error;
   }
-
 };
 
 exports.destroy = async (public_id) => {
