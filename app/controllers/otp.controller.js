@@ -27,6 +27,7 @@ exports.store = async (req, res, next) => {
         expired_at: {
           [Op.gt]: new Date().toISOString(), // Check if expired_at is still valid
         },
+        verified_at: null, // Check if verified_at is empty
       },
     });
 
