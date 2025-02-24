@@ -49,7 +49,10 @@ exports.store = async (req, res, next) => {
 
     await transaction.commit();
 
-    return Response.success(res, Message.success._success, otp);
+    return Response.success(res, Message.success._success, {
+      phone: otp.phone,
+      expired_at: otp.expired_at,
+    });
   } catch (error) {
     if (!transaction.finished) {
       await transaction.rollback();
@@ -151,7 +154,10 @@ exports.verifyOtp = async (req, res, next) => {
 
     await transaction.commit();
 
-    return Response.success(res, Message.success._success, { otp, token });
+    return Response.success(res, Message.success._success, {
+      phone: otp.phone,
+      token,
+    });
   } catch (error) {
     if (!transaction.finished) {
       await transaction.rollback();
