@@ -50,6 +50,10 @@ jobs:
             echo "BCEL_MCID_V2=${{ secrets.BCEL_MCID_V2 }}" >> .env
             echo "BCEL_MCC_V2=${{ secrets.BCEL_MCC_V2 }}" >> .env
             echo "BCEL_SHOPCODE_V2=${{ secrets.BCEL_SHOPCODE_V2 }}" >> .env
+            echo "HAL_PASSWORD=${{ secrets.HAL_PASSWORD }}" >> .env
+            echo "HAL_CLIENT_SECRET=${{ secrets.HAL_CLIENT_SECRET }}" >> .env
+            echo "HAL_AUTH_URL=${{ secrets.HAL_AUTH_URL }}" >> .env
+            echo "HAL_SMS_URL=${{ secrets.HAL_SMS_URL }}" >> .env
             npm i
             npm run migrate
             pm2 restart "api" || pm2 start npm --name "api" -- run start
