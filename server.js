@@ -28,6 +28,9 @@ app.use(
   }),
 );
 
+import otp from "./app/routes/otp.routes";
+otp(app);
+
 import admin from "./app/routes/admin_result.routes";
 admin(app);
 
