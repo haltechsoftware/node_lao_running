@@ -82,11 +82,11 @@ exports.destroy = async (req, res, next) => {
         id: req.params.id,
       },
     });
-    if (!videos) return next(createError(Message.fail._notFound("video"), 404));
-
+    if (!videos)
+      return res.status(404).json({message: Message.fail._notFound("video")});
+      
     await videos.destroy();
 
-    return Response.success(res, Message.success._success, null);
   } catch (error) {
     next(error);
   }
@@ -109,7 +109,8 @@ exports.show = async (req, res, next) => {
       },
     });
     if (!videos)
-      return next(createError(Message.fail._notFound(`video: ${id}`), 404));
+            return res.status(404).json({message: Message.fail._notFound("video")});
+
 
     return Response.success(res, Message.success._success, videos);
   } catch (error) {

@@ -1,16 +1,15 @@
 import Message from "../helpers/message.helper";
 import Status from "../helpers/status.helper";
 import db from "../../models/";
-import createError from "http-errors";
 
 exports.hasRole = (requiredRole) => {
   return async (req, res, next) => {
     try {
       const user = await db.User.findByPk(req.user.user_id);
       if (!user) {
-        return next(
-          createError(Status.code.AuthError, Message.fail._unAutorize),
-        );
+        return res
+          .status(Status.code.AuthError)
+          .json({ message: Message.fail._unAutorize });
       }
 
       const userRoles = await user.getRoles(); // e.g. [{ name: "User" }, { name: "Admin" }, ... ]

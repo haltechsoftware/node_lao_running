@@ -8,6 +8,7 @@ import Message from "../helpers/message.helper";
 import Image from "../helpers/upload.helper";
 import createError from "http-errors";
 import Otp from "../helpers/otp.helper";
+import { verifyToken } from "./otp.controller";
 
 /**
  * Validate Step 1.
@@ -115,27 +116,27 @@ exports.register = async (req, res, next) => {
       id_token,
     } = req.body;
 
-    const decodeData = Otp.verify(id_token);
+    const decodeData = verifyToken(id_token);
 
     if (!decodeData) {
+      if (!transaction.finished) {
       await transaction.rollback();
-
-      return next(
-        createError(Status.code.BadRequest, Message.fail._invalidToken),
-      );
+      }
+      return res.status(Status.code.BadRequest).json({message: Message.fail._invalidToken});
+      
     }
 
     const oldUser = await db.User.findOne({ where: { sub: decodeData.sub } });
 
     if (oldUser) {
+      if (!transaction.finished) {
       await transaction.rollback();
-
-      return next(
-        createError(Status.code.BadRequest, Message.fail._existPhone),
-      );
+      }
+      return res.status(Status.code.BadRequest).json({message: Message.fail._existPhone});
+      
     }
 
-    const phone = decodeData.phone_number.replace("+85620", "");
+    const phone = decodeData.phone.replace("+85620", "");
 
     const encryptedPassword = password ? await bcrypt.hash(password, 10) : null;
 
@@ -206,7 +207,9 @@ exports.register = async (req, res, next) => {
 
     return Response.success(res, Message.success._success, userData);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };
@@ -255,7 +258,8 @@ exports.login = async (req, res, next) => {
 
       return Response.success(res, Message.success._success, userData);
     }
-    next(createError(Status.code.BadRequest, Message.fail._invalidCredential));
+      return res.status(Status.code.BadRequest).json({message: Message.fail._invalidCredential});
+
   } catch (error) {
     next(error);
   }
@@ -341,7 +345,9 @@ exports.createAdmin = async (req, res, next) => {
 
     return Response.success(res, Message.success._success, userData);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };
@@ -399,7 +405,7 @@ exports.getOneAdmin = async (req, res, next) => {
       },
     });
     if (!userData)
-      return next(createError(Message.fail._notFound(`user: ${id}`)));
+      return res.status(Status.code.BadRequest).json({message: Message.fail._notFound(`user: ${id}`)});
 
     return Response.success(res, Message.success._success, userData);
   } catch (error) {
@@ -432,10 +438,10 @@ exports.destroyAdmin = async (req, res, next) => {
       },
     });
     if (!userData)
-      return next(createError(Message.fail._notFound(`user: ${id}`)));
+      return res.status(Status.code.BadRequest).json({message: Message.fail._notFound(`user: ${id}`)});
+
     await userData.destroy();
 
-    return Response.success(res, Message.success._success, null);
   } catch (error) {
     next(error);
   }
@@ -466,7 +472,7 @@ exports.resetPasswordAdmin = async (req, res, next) => {
       },
     });
     if (!userData)
-      return next(createError(Message.fail._notFound(`user: ${id}`)));
+      return res.status(Status.code.BadRequest).json({message: Message.fail._notFound(`user: ${id}`)});
 
     const password = await bcrypt.hash(req.body.new_password, 10);
 
@@ -493,7 +499,7 @@ exports.updateRange = async (req, res, next) => {
     const { range } = req.body;
 
     if (!req.auth.package_id)
-      return next(createError(Status.code.BadRequest, Message.fail._freeUser));
+      return res.status(Status.code.BadRequest).json({message: Message.fail._freeUser});
 
     const userProfile = await req.auth.getUserProfile({
       where: {
@@ -502,14 +508,11 @@ exports.updateRange = async (req, res, next) => {
     });
 
     if (!userProfile)
-      return next(
-        createError(Status.code.BadRequest, Message.fail._areadyChooseRange),
-      );
+      return res.status(Status.code.BadRequest).json({message: Message.fail._areadyChooseRange});
 
     userProfile.range = range;
     await userProfile.save();
 
-    return Response.success(res, Message.success._success, userProfile.range);
   } catch (error) {
     next(error);
   }
@@ -530,9 +533,7 @@ exports.resetPasswordUser = async (req, res, next) => {
     const decodeData = Otp.verify(id_token);
 
     if (!decodeData)
-      return next(
-        createError(Status.code.BadRequest, Message.fail._invalidToken),
-      );
+      return res.status(Status.code.BadRequest).json({message: Message.fail._invalidToken});
 
     const existUser = await db.User.findOne({
       where: {
@@ -548,9 +549,7 @@ exports.resetPasswordUser = async (req, res, next) => {
     });
 
     if (!existUser)
-      return next(
-        createError(Status.code.BadRequest, Message.fail._notFound("user")),
-      );
+      return res.status(Status.code.BadRequest).json({message: Message.fail._notFound("user")});
 
     const encryptedPassword = await bcrypt.hash(password, 10);
 

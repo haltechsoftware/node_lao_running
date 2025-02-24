@@ -19,8 +19,10 @@ exports.create = async (req, res, next) => {
   try {
     const valid = await RunResultValid.create(req.body);
     if (Object.keys(valid).length) {
+      if (!transaction.finished) {
       await transaction.rollback();
-      return next(createError(Status.code.Validation, valid));
+      }
+      return res.status(Status.code.Validation).json(valid);
     }
 
     const { time, range } = req.body;
@@ -74,7 +76,9 @@ exports.create = async (req, res, next) => {
       ranking: ranking,
     });
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };

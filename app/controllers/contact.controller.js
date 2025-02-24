@@ -86,11 +86,10 @@ exports.destroy = async (req, res, next) => {
       },
     });
     if (!contacts)
-      return next(createError(Message.fail._notFound("contact"), 404));
+      return res.status(404).json({message: Message.fail._notFound("contact")});
 
     await contacts.destroy();
 
-    return Response.success(res, Message.success._success, null);
   } catch (error) {
     next(error);
   }
@@ -113,7 +112,7 @@ exports.show = async (req, res, next) => {
       },
     });
     if (!contacts)
-      return next(createError(Message.fail._notFound(`contact: ${id}`), 404));
+      return res.status(404).json({message: Message.fail._notFound(`contact: ${id}`)});
 
     return Response.success(res, Message.success._success, contacts);
   } catch (error) {

@@ -4,6 +4,7 @@ import Message from "../helpers/message.helper";
 import createError from "http-errors";
 import { loginAndSendOtp } from "../helpers/hal.service";
 import { Op } from 'sequelize';
+import jwt from "jsonwebtoken";
 
 /**
  * Create Otp.
@@ -38,8 +39,10 @@ exports.store = async (req, res, next) => {
 
       const isSent = await loginAndSendOtp(req.body.phone, otp.code);
       if (!isSent) {
-        await transaction.rollback();
-        return next(createError(500, Message.error._otp_not_sent));
+        if (!transaction.finished) {
+      await transaction.rollback();
+    }
+      return res.status(500).json({message: Message.fail._otp_not_sent});
       }
     }
 
@@ -47,7 +50,9 @@ exports.store = async (req, res, next) => {
 
     return Response.success(res, Message.success._success, otp);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };
@@ -80,18 +85,21 @@ exports.resendOtp = async (req, res, next) => {
 
       const isSent = await loginAndSendOtp(req.body.phone, otp.code);
       if (!isSent) {
-        await transaction.rollback();
-        return next(createError(500, Message.error._otp_not_sent));
+        if (!transaction.finished) {
+      await transaction.rollback();
+    }
+      return res.status(500).json({message: Message.fail._otp_not_sent});
+
       }
     } else {
-      return next(createError(404, Message.error._otp_not_found));
+      return res.status(404).json({message: Message.fail._otp_not_found});
+
     }
 
-    await transaction.commit();
-
-    return Response.success(res, Message.success._success, otp);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };
@@ -111,22 +119,54 @@ exports.verifyOtp = async (req, res, next) => {
       where: {
         phone: req.body.phone,
       },
-      order: [['created_at', 'DESC']], // Select the latest OTP
+      order: [['createdAt', 'DESC']], // Select the latest OTP
     });
 
     if (!otp || otp.code !== req.body.code || new Date(otp.expired_at) <= new Date() || otp.verified_at !== null) {
+      if (!transaction.finished) {
       await transaction.rollback();
-      return next(createError(400, Message.error._otp_invalid));
+      }
+      
+      return res.status(400).json({message: Message.fail._otp_invalid});
     }
 
     otp.verified_at = new Date().toISOString();
     await otp.save();
 
+    const token = jwt.sign(
+      {
+        phone: otp.phone,
+        sub: otp.id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "30m",
+      },
+    );
+
     await transaction.commit();
 
-    return Response.success(res, Message.success._success, otp);
+    return Response.success(res, Message.success._success, { otp, token });
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
+  }
+};
+
+/**
+ * Verify OTP Token.
+ *
+ * @param {string} token
+ * @returns {object|null}
+ */
+exports.verifyToken = (token) => {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    console.log(error);
+    
+    return null;
   }
 };

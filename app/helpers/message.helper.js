@@ -26,6 +26,7 @@ exports.fail = {
   _freeUser: "Free user can not choose range.",
   _existPhone: "This phone has aready used",
   _otp_not_sent: "Otp not sent.",
+  _otp_invalid: "Invalid OTP."
 };
 
 exports.serverError = {

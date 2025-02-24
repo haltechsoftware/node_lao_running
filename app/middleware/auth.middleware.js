@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import Message from "../helpers/message.helper";
 import Status from "../helpers/status.helper";
-import createError from "http-errors";
 import db from "../../models";
 
 const verifyToken = async (req, res, next) => {
@@ -11,32 +10,29 @@ const verifyToken = async (req, res, next) => {
     req.headers["x-access-token"] ||
     req.headers["authorization"];
 
-  if (!token) {
-    return next(
-      createError(Status.code.Unauthorized, Message.fail._unAutorize),
-    );
+  if (req.headers["authorization"] && req.headers["authorization"].startsWith("Bearer ")) {
+    token = req.headers["authorization"].split(" ")[1];
   }
 
-  if (token.substring(0, 6) === "Bearer") {
-    const bearer = token.split(" ");
-    token = bearer[1];
+  if (!token) {
+    return res.status(Status.code.Unauthorized).json({ message: Message.fail._unAutorize });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const auth = await db.User.findByPk(decoded.user_id);
 
-    if (auth.resetPasswordAt && auth.resetPasswordAt > decoded.iat)
-      return next(
-        createError(Status.code.Unauthorized, Message.fail._oldPassword),
-      );
+    if (auth.resetPasswordAt && auth.resetPasswordAt > decoded.iat) {
+      return res.status(Status.code.Unauthorized).json({ message: Message.fail._oldPassword });
+    }
 
     req.user = decoded;
     req.auth = auth;
+
+    next();
   } catch (err) {
-    return next(createError(Status.code.Unauthorized, err));
+    return res.status(Status.code.Unauthorized).json({ message: Message.fail._unAutorize, error: err.message });
   }
-  return next();
 };
 
 module.exports = verifyToken;

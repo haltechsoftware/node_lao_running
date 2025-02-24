@@ -27,14 +27,10 @@ exports.updateProfile = async (req, res, next) => {
     });
 
     if (!userProfile) {
+      if (!transaction.finished) {
       await transaction.rollback();
-
-      next(
-        createError(
-          Status.code.NotFound,
-          Message.fail._notFound("user_profile"),
-        ),
-      );
+    }
+      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("user_profile")});
     }
     const { name, surname, gender, dob, national_id } = req.body;
 
@@ -72,7 +68,9 @@ exports.updateProfile = async (req, res, next) => {
     await transaction.commit();
     return Response.success(res, Message.success._success, updateData);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };
@@ -91,14 +89,11 @@ exports.updateUserLocation = async (req, res, next) => {
     const userProfile = await req.auth.getUserProfile();
 
     if (!userProfile) {
+      if (!transaction.finished) {
       await transaction.rollback();
+    }
 
-      next(
-        createError(
-          Status.code.NotFound,
-          Message.fail._notFound("user_profile"),
-        ),
-      );
+      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("user_profile")});
     }
 
     let hal_branche_id = req.body.hal_branche_id;
@@ -111,17 +106,12 @@ exports.updateUserLocation = async (req, res, next) => {
         },
       });
       if (!Evo) {
-        await transaction.rollback();
-
-        next(
-          createError(
-            Status.code.NotFound,
-            Message.fail._notFound("evo_store"),
-          ),
-        );
+        if (!transaction.finished) {
+      await transaction.rollback();
+        }
+      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("evo_store")});
       }
 
-      hal_branche_id = Evo.id;
     }
 
     const updateData = await userProfile.update(
@@ -137,7 +127,9 @@ exports.updateUserLocation = async (req, res, next) => {
     await transaction.commit();
     return Response.success(res, Message.success._success, updateData);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };
@@ -160,13 +152,9 @@ exports.getProfile = async (req, res, next) => {
         model: db.HalBranche,
       },
     });
-    if (!userProfile)
-      next(
-        createError(
-          Status.code.NotFound,
-          Message.fail._notFound("user_profile"),
-        ),
-      );
+    if (!userProfile){
+            return res.status(Status.code.NotFound).json({message: Message.fail._notFound("user_profile")});
+      }
 
     const ranking = await req.auth.getRanking({
       attributes: ["total_range", "total_time"],
@@ -236,14 +224,11 @@ exports.getBcelQr = async (req, res, next) => {
   try {
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
     if (!runnerPackage) {
+      if (!transaction.finished) {
       await transaction.rollback();
-
-      return next(
-        createError(
-          Status.code.NotFound,
-          Message.fail._notFound("runner_package"),
-        ),
-      );
+      }
+      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("runner_package")});
+      
     }
 
     let userPackage = await db.UserPackage.findOne({
@@ -310,9 +295,11 @@ exports.getBcelQr = async (req, res, next) => {
       return Response.success(res, Message.success._success, paymentData);
     }
     await transaction.commit();
-    next(createError(Status.code.BadRequest, userPackage));
+      return res.status(Status.code.NotFound).json(userPackage);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };
@@ -343,14 +330,10 @@ exports.payBcelQr = async (req, res, next) => {
       );
     } catch (error) {
       console.log(error);
+      if (!transaction.finished) {
       await transaction.rollback();
-
-      next(
-        createError(
-          Status.code.NotFound,
-          Message.fail._notFound("transaction"),
-        ),
-      );
+    }
+      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("transaction")});
     }
 
     const payment = await db.UserPackage.findOne({
@@ -359,24 +342,24 @@ exports.payBcelQr = async (req, res, next) => {
       },
     });
     if (!payment) {
+      if (!transaction.finished) {
       await transaction.rollback();
-
-      return next(
-        createError(Status.code.NotFound, Message.fail._notFound("payment")),
-      );
+      }
+      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("payment")});
     }
     if (payment.status == "success") {
+      if (!transaction.finished) {
       await transaction.rollback();
-
-      return next(createError(Status.code.BadRequest, payment));
+    }
+      return res.status(Status.code.BadRequest).json(payment);
     }
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
     if (!runnerPackage) {
+      if (!transaction.finished) {
       await transaction.rollback();
+    }
+      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("package")});
 
-      return next(
-        createError(Status.code.NotFound, Message.fail._notFound("package")),
-      );
     }
 
     const paid = await payment.update(
@@ -404,7 +387,9 @@ exports.payBcelQr = async (req, res, next) => {
 
     return Response.success(res, Message.success._success, paid);
   } catch (error) {
-    await transaction.rollback();
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
     next(error);
   }
 };

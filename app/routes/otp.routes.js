@@ -10,5 +10,17 @@ module.exports = (app) => {
     otp.store,
   );
 
+  // Resend Otp
+  router.post(
+    "/resend",
+    otp.resendOtp,
+  );
+
+    // Resend Otp
+  router.post(
+    "/verify",
+    otp.verifyOtp,
+  );
+
   app.use("/api/otp", router);
 };
