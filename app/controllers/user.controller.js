@@ -142,6 +142,15 @@ exports.register = async (req, res, next) => {
 
     const encryptedPassword = password ? await bcrypt.hash(password, 10) : null;
 
+    console.log({
+      name: name,
+      phone: phone,
+      sub: decodeData.sub,
+      email: email,
+      password: encryptedPassword,
+      is_active: true,
+    });
+
     const user = await db.User.create(
       {
         name: name,

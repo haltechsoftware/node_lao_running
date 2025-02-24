@@ -93,11 +93,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       profile_image: {
         type: DataTypes.STRING,
-        allowNull: false,
+        // allowNull: false,
       },
       profile_image_id: {
         type: DataTypes.STRING,
-        allowNull: false,
+        // allowNull: false,
       },
 
       createdAt: {

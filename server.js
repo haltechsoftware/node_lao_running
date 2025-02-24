@@ -63,6 +63,10 @@ process.on("unhandledRejection", function (err) {
   process.exit(1); // Exit the process to prevent unstable state
 });
 
+process.on("SequelizeValidationError", function (err) {
+  console.log(555555, err);
+});
+
 app.use((req, res, next) => {
   const error = createError(404, Message.fail._routeNotfound);
   next(error);
@@ -73,6 +77,7 @@ app.use((error, req, res) => {
   if (error instanceof ValidationError) {
     return res.status(error.statusCode).json(error);
   }
+
   Response.error(res, error);
 });
 
