@@ -51,4 +51,5 @@ jobs:
             echo "BCEL_MCC_V2=${{ secrets.BCEL_MCC_V2 }}" >> .env
             echo "BCEL_SHOPCODE_V2=${{ secrets.BCEL_SHOPCODE_V2 }}" >> .env
             npm i
+            npm run migrate
             pm2 restart "api" || pm2 start npm --name "api" -- run start
