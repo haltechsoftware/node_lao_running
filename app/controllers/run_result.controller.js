@@ -20,7 +20,7 @@ exports.create = async (req, res, next) => {
     const valid = await RunResultValid.create(req.body);
     if (Object.keys(valid).length) {
       if (!transaction.finished) {
-      await transaction.rollback();
+        await transaction.rollback();
       }
       return res.status(Status.code.Validation).json(valid);
     }

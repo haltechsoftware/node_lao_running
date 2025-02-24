@@ -28,9 +28,11 @@ exports.updateProfile = async (req, res, next) => {
 
     if (!userProfile) {
       if (!transaction.finished) {
-      await transaction.rollback();
-    }
-      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("user_profile")});
+        await transaction.rollback();
+      }
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("user_profile") });
     }
     const { name, surname, gender, dob, national_id } = req.body;
 
@@ -90,10 +92,12 @@ exports.updateUserLocation = async (req, res, next) => {
 
     if (!userProfile) {
       if (!transaction.finished) {
-      await transaction.rollback();
-    }
+        await transaction.rollback();
+      }
 
-      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("user_profile")});
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("user_profile") });
     }
 
     let hal_branche_id = req.body.hal_branche_id;
@@ -107,11 +111,12 @@ exports.updateUserLocation = async (req, res, next) => {
       });
       if (!Evo) {
         if (!transaction.finished) {
-      await transaction.rollback();
+          await transaction.rollback();
         }
-      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("evo_store")});
+        return res
+          .status(Status.code.NotFound)
+          .json({ message: Message.fail._notFound("evo_store") });
       }
-
     }
 
     const updateData = await userProfile.update(
@@ -152,9 +157,11 @@ exports.getProfile = async (req, res, next) => {
         model: db.HalBranche,
       },
     });
-    if (!userProfile){
-            return res.status(Status.code.NotFound).json({message: Message.fail._notFound("user_profile")});
-      }
+    if (!userProfile) {
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("user_profile") });
+    }
 
     const ranking = await req.auth.getRanking({
       attributes: ["total_range", "total_time"],
@@ -225,10 +232,11 @@ exports.getBcelQr = async (req, res, next) => {
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
     if (!runnerPackage) {
       if (!transaction.finished) {
-      await transaction.rollback();
+        await transaction.rollback();
       }
-      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("runner_package")});
-      
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("runner_package") });
     }
 
     let userPackage = await db.UserPackage.findOne({
@@ -295,7 +303,7 @@ exports.getBcelQr = async (req, res, next) => {
       return Response.success(res, Message.success._success, paymentData);
     }
     await transaction.commit();
-      return res.status(Status.code.NotFound).json(userPackage);
+    return res.status(Status.code.NotFound).json(userPackage);
   } catch (error) {
     if (!transaction.finished) {
       await transaction.rollback();
@@ -331,9 +339,11 @@ exports.payBcelQr = async (req, res, next) => {
     } catch (error) {
       console.log(error);
       if (!transaction.finished) {
-      await transaction.rollback();
-    }
-      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("transaction")});
+        await transaction.rollback();
+      }
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("transaction") });
     }
 
     const payment = await db.UserPackage.findOne({
@@ -343,23 +353,26 @@ exports.payBcelQr = async (req, res, next) => {
     });
     if (!payment) {
       if (!transaction.finished) {
-      await transaction.rollback();
+        await transaction.rollback();
       }
-      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("payment")});
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("payment") });
     }
     if (payment.status == "success") {
       if (!transaction.finished) {
-      await transaction.rollback();
-    }
+        await transaction.rollback();
+      }
       return res.status(Status.code.BadRequest).json(payment);
     }
     const runnerPackage = await db.Package.findByPk(req.params.packageId);
     if (!runnerPackage) {
       if (!transaction.finished) {
-      await transaction.rollback();
-    }
-      return res.status(Status.code.NotFound).json({message: Message.fail._notFound("package")});
-
+        await transaction.rollback();
+      }
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("package") });
     }
 
     const paid = await payment.update(

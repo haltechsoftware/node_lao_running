@@ -5,22 +5,13 @@ const router = express.Router();
 
 module.exports = (app) => {
   // Create Otp
-  router.post(
-    "",
-    otp.store,
-  );
+  router.post("", otp.store);
 
   // Resend Otp
-  router.post(
-    "/resend",
-    otp.resendOtp,
-  );
+  router.post("/resend", otp.resendOtp);
 
-    // Resend Otp
-  router.post(
-    "/verify",
-    otp.verifyOtp,
-  );
+  // Resend Otp
+  router.post("/verify", otp.verifyOtp);
 
   app.use("/api/otp", router);
 };

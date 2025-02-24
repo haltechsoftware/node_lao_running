@@ -10,12 +10,17 @@ const verifyToken = async (req, res, next) => {
     req.headers["x-access-token"] ||
     req.headers["authorization"];
 
-  if (req.headers["authorization"] && req.headers["authorization"].startsWith("Bearer ")) {
+  if (
+    req.headers["authorization"] &&
+    req.headers["authorization"].startsWith("Bearer ")
+  ) {
     token = req.headers["authorization"].split(" ")[1];
   }
 
   if (!token) {
-    return res.status(Status.code.Unauthorized).json({ message: Message.fail._unAutorize });
+    return res
+      .status(Status.code.Unauthorized)
+      .json({ message: Message.fail._unAutorize });
   }
 
   try {
@@ -23,7 +28,9 @@ const verifyToken = async (req, res, next) => {
     const auth = await db.User.findByPk(decoded.user_id);
 
     if (auth.resetPasswordAt && auth.resetPasswordAt > decoded.iat) {
-      return res.status(Status.code.Unauthorized).json({ message: Message.fail._oldPassword });
+      return res
+        .status(Status.code.Unauthorized)
+        .json({ message: Message.fail._oldPassword });
     }
 
     req.user = decoded;
@@ -31,7 +38,9 @@ const verifyToken = async (req, res, next) => {
 
     next();
   } catch (err) {
-    return res.status(Status.code.Unauthorized).json({ message: Message.fail._unAutorize, error: err.message });
+    return res
+      .status(Status.code.Unauthorized)
+      .json({ message: Message.fail._unAutorize, error: err.message });
   }
 };
 

@@ -8,13 +8,14 @@ const AuthBody = {
   client_id: 8,
   client_secret: process.env.HAL_CLIENT_SECRET,
   grant_type: "password",
-  scope: "*"
+  scope: "*",
 };
 
 // Hal SMS
 const sendSmsUrl = process.env.HAL_SMS_URL;
-const defaultSmsMessage = 'ລະຫັດ OTP ສຳລັບລົງທະບຽນງານ Vari Virtual Run 2025 ຂອງທ່ານແມ່ນ: ';
-const phoneServiceProvider = 'UNITELServiceProvider';
+const defaultSmsMessage =
+  "ລະຫັດ OTP ສຳລັບລົງທະບຽນງານ Vari Virtual Run 2025 ຂອງທ່ານແມ່ນ: ";
+const phoneServiceProvider = "UNITELServiceProvider";
 
 /**
  * Send Otp.
@@ -24,21 +25,25 @@ const phoneServiceProvider = 'UNITELServiceProvider';
  * @returns boolean
  */
 const sendOtp = async (phone, code, token) => {
-    const response = await axios.post(sendSmsUrl, {
+  const response = await axios.post(
+    sendSmsUrl,
+    {
       phone_number: phone,
-      message: defaultSmsMessage + ' ' + code,
-      phone_payment_service_provider: phoneServiceProvider
-    }, {
+      message: defaultSmsMessage + " " + code,
+      phone_payment_service_provider: phoneServiceProvider,
+    },
+    {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-  
-    if(response.status == '200'){
-      return true;
-    }
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
 
-    return false;
+  if (response.status == "200") {
+    return true;
+  }
+
+  return false;
 };
 
 /**
@@ -47,25 +52,25 @@ const sendOtp = async (phone, code, token) => {
  * @returns string
  */
 const getHalAuthToken = async () => {
-    const response = await axios.post(halAuthUrl, AuthBody);
+  const response = await axios.post(halAuthUrl, AuthBody);
 
-    return response?.data?.access_token || "";
-}
+  return response?.data?.access_token || "";
+};
 
 /**
  * Login and send Otp.
  */
 const loginAndSendOtp = async (phone, code) => {
-    const token = await getHalAuthToken();
-    if(token){
-      return await sendOtp(phone, code, token);
-    }
+  const token = await getHalAuthToken();
+  if (token) {
+    return await sendOtp(phone, code, token);
+  }
 
-    return false;
-}
+  return false;
+};
 
 module.exports = {
   sendOtp,
   getHalAuthToken,
-  loginAndSendOtp
-}
+  loginAndSendOtp,
+};
