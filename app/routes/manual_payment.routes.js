@@ -3,6 +3,7 @@ const router = express.Router();
 import manualPaymentController from "../controllers/manual_payment.controller";
 import multer from "multer";
 import auth from "../middleware/auth.middleware";
+import { handleMulterError } from "../middleware/error.middleware";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -13,7 +14,12 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+});
 
 export default router;
 
@@ -22,7 +28,15 @@ module.exports = (app) => {
   router.post(
     "/",
     auth,
-    upload.single("payment_slip"),
+    (req, res, next) => {
+      upload.single("payment_slip")(req, res, (err) => {
+        if (err) {
+          handleMulterError(err, req, res, next);
+        } else {
+          next();
+        }
+      });
+    },
     manualPaymentController.create,
   );
   router.get("/", auth, manualPaymentController.findAll);

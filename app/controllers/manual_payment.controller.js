@@ -39,34 +39,46 @@ exports.create = async (req, res, next) => {
     }
 
     console.log(444);
+    console.log("File info:", JSON.stringify(req.file));
 
-    // Upload payment slip
-    const payment_slip = await Image.upload(req.file);
-    console.log(payment_slip);
+    try {
+      // Upload payment slip
+      const payment_slip = await Image.upload(req.file);
+      console.log("Upload successful:", payment_slip);
 
-    // Create manual payment entry
-    const manualPayment = await db.ManualPayment.create(
-      {
-        user_id: req.user.user_id,
-        package_id: package_id,
-        amount: amount || runnerPackage.price,
-        address: address,
-        payment_slip: payment_slip.secure_url,
-        payment_slip_id: payment_slip.public_id,
-      },
-      {
-        transaction: transaction,
-      },
-    );
+      // Create manual payment entry
+      const manualPayment = await db.ManualPayment.create(
+        {
+          user_id: req.user.user_id,
+          package_id: package_id,
+          amount: amount || runnerPackage.price,
+          address: address,
+          payment_slip: payment_slip.secure_url,
+          payment_slip_id: payment_slip.public_id,
+        },
+        {
+          transaction: transaction,
+        },
+      );
 
-    await transaction.commit();
-    return Response.success(res, Message.success._success, manualPayment);
+      await transaction.commit();
+      return Response.success(res, Message.success._success, manualPayment);
+    } catch (uploadError) {
+      console.error("Upload error:", uploadError);
+      if (!transaction.finished) {
+        await transaction.rollback();
+      }
+      return res
+        .status(Status.code.BadRequest)
+        .json({ message: uploadError.message || "Error uploading file" });
+    }
   } catch (error) {
+    console.error("Create payment error:", error);
     if (!transaction.finished) {
       await transaction.rollback();
     }
     return res
-      .status(Status.code.NotFound)
+      .status(Status.code.InternalServerError)
       .json({ message: error.message || Message.fail._internalServerError });
   }
 };
