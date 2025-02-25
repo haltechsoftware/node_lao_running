@@ -38,13 +38,9 @@ exports.create = async (req, res, next) => {
         .json({ message: Message.fail._notFound("package") });
     }
 
-    console.log(444);
-    console.log("File info:", JSON.stringify(req.file));
-
     try {
       // Upload payment slip
       const payment_slip = await Image.upload(req.file);
-      console.log("Upload successful:", payment_slip);
 
       // Create manual payment entry
       const manualPayment = await db.ManualPayment.create(
