@@ -38,8 +38,11 @@ exports.create = async (req, res, next) => {
         .json({ message: Message.fail._notFound("package") });
     }
 
+    console.log(444);
+
     // Upload payment slip
     const payment_slip = await Image.upload(req.file);
+    console.log(payment_slip);
 
     // Create manual payment entry
     const manualPayment = await db.ManualPayment.create(
@@ -62,7 +65,9 @@ exports.create = async (req, res, next) => {
     if (!transaction.finished) {
       await transaction.rollback();
     }
-    next(error);
+    return res
+      .status(Status.code.NotFound)
+      .json({ message: error.message || Message.fail._internalServerError });
   }
 };
 
