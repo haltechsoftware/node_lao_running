@@ -46,6 +46,11 @@ module.exports = (app) => {
   router.get("/:id", auth, manualPaymentController.findOne);
   router.put("/:id/approve", auth, manualPaymentController.approve);
   router.put("/:id/reject", auth, manualPaymentController.reject);
-
+  router.put(
+    "/upload-slip",
+    auth,
+    upload.single("payment_slip"),
+    manualPaymentController.uploadSlip,
+  );
   app.use("/api/slip", router);
 };

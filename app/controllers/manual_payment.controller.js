@@ -18,14 +18,22 @@ exports.create = async (req, res, next) => {
   try {
     const { package_id, amount, address } = req.body;
 
-    if (!req.file) {
+    // Check for existing payment
+    const existingPayment = await db.ManualPayment.findOne({
+      where: {
+        user_id: req.user.user_id,
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
+    // If payment exists and is approved, reject new creation
+    if (existingPayment && existingPayment.status == "approved") {
       if (!transaction.finished) {
         await transaction.rollback();
       }
-
       return res
         .status(Status.code.BadRequest)
-        .json({ message: Message.fail._paymentSlipRequired });
+        .json({ message: "You already have an approved or rejected payment" });
     }
 
     const runnerPackage = await db.Package.findByPk(package_id);
@@ -39,23 +47,59 @@ exports.create = async (req, res, next) => {
     }
 
     try {
+      // If there's no payment slip, only update existing pending payment
+      if (
+        !req.file &&
+        existingPayment &&
+        existingPayment.status === "pending"
+      ) {
+        const updatedPayment = await existingPayment.update(
+          {
+            package_id: package_id,
+            amount: amount || runnerPackage.price,
+            address: address,
+          },
+          {
+            transaction: transaction,
+          },
+        );
+        await transaction.commit();
+        return Response.success(res, Message.success._success, updatedPayment);
+      }
+
+      // Require payment slip for new payments
+      if (!req.file) {
+        if (!transaction.finished) {
+          await transaction.rollback();
+        }
+        return res
+          .status(Status.code.BadRequest)
+          .json({ message: Message.fail._paymentSlipRequired });
+      }
+
       // Upload payment slip
       const payment_slip = await Image.upload(req.file);
 
-      // Create manual payment entry
-      const manualPayment = await db.ManualPayment.create(
-        {
-          user_id: req.user.user_id,
-          package_id: package_id,
-          amount: amount || runnerPackage.price,
-          address: address,
-          payment_slip: payment_slip.secure_url,
-          payment_slip_id: payment_slip.public_id,
-        },
-        {
+      // Create or update payment entry
+      const paymentData = {
+        user_id: req.user.user_id,
+        package_id: package_id,
+        amount: amount || runnerPackage.price,
+        address: address,
+        payment_slip: payment_slip.secure_url,
+        payment_slip_id: payment_slip.public_id,
+      };
+
+      let manualPayment;
+      if (existingPayment && existingPayment.status === "pending") {
+        manualPayment = await existingPayment.update(paymentData, {
           transaction: transaction,
-        },
-      );
+        });
+      } else {
+        manualPayment = await db.ManualPayment.create(paymentData, {
+          transaction: transaction,
+        });
+      }
 
       await transaction.commit();
       return Response.success(res, Message.success._success, manualPayment);
@@ -175,10 +219,45 @@ exports.findAllAdmin = async (req, res, next) => {
  */
 exports.findAll = async (req, res, next) => {
   try {
+    const per_page = Number.parseInt(req.query.per_page);
+    let page = Number.parseInt(req.query.page);
+    const status = req.query.status;
+
+    const condition = {
+      user_id: req.user.user_id,
+      ...(status && { status: status }),
+    };
+
+    if (per_page) {
+      const manualPaymentData = {};
+      page = page && page > 0 ? page : 1;
+
+      const manualPayments = await db.ManualPayment.findAndCountAll({
+        where: condition,
+        include: [
+          {
+            model: db.Package,
+            attributes: ["id", "name", "price"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+        limit: per_page,
+        offset: (page - 1) * per_page,
+        subQuery: false,
+      });
+
+      manualPaymentData.data = manualPayments.rows;
+      manualPaymentData.pagination = {
+        total: manualPayments.count,
+        per_page: per_page,
+        total_pages: Math.ceil(manualPayments.count / per_page),
+        current_page: page,
+      };
+      return Response.success(res, Message.success._success, manualPaymentData);
+    }
+
     const manualPayments = await db.ManualPayment.findAll({
-      where: {
-        user_id: req.user.user_id,
-      },
+      where: condition,
       include: [
         {
           model: db.Package,
@@ -452,5 +531,87 @@ exports.reject = async (req, res, next) => {
       await transaction.rollback();
     }
     next(error);
+  }
+};
+
+/**
+ * Upload additional payment slip
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns \app\helpers\response.helper
+ */
+exports.uploadSlip = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    // Find the most recent pending payment for the user
+    const manualPayment = await db.ManualPayment.findOne({
+      where: {
+        user_id: req.user.user_id,
+        status: "pending",
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
+    // Check if payment exists
+    if (!manualPayment) {
+      if (!transaction.finished) {
+        await transaction.rollback();
+      }
+      return res
+        .status(Status.code.NotFound)
+        .json({ message: Message.fail._notFound("pending payment") });
+    }
+
+    // Check if new slip is provided
+    if (!req.file) {
+      if (!transaction.finished) {
+        await transaction.rollback();
+      }
+      return res
+        .status(Status.code.BadRequest)
+        .json({ message: Message.fail._paymentSlipRequired });
+    }
+
+    try {
+      // Delete old payment slip if exists
+      if (manualPayment.payment_slip_id) {
+        await Image.delete(manualPayment.payment_slip_id);
+      }
+
+      // Upload new payment slip
+      const payment_slip = await Image.upload(req.file);
+
+      // Update payment record
+      const updatedPayment = await manualPayment.update(
+        {
+          payment_slip: payment_slip.secure_url,
+          payment_slip_id: payment_slip.public_id,
+        },
+        {
+          transaction: transaction,
+        },
+      );
+
+      await transaction.commit();
+      return Response.success(res, Message.success._success, updatedPayment);
+    } catch (uploadError) {
+      console.error("Upload error:", uploadError);
+      if (!transaction.finished) {
+        await transaction.rollback();
+      }
+      return res
+        .status(Status.code.BadRequest)
+        .json({ message: uploadError.message || "Error uploading file" });
+    }
+  } catch (error) {
+    console.error("Upload slip error:", error);
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
+    return res
+      .status(Status.code.InternalServerError)
+      .json({ message: error.message || Message.fail._internalServerError });
   }
 };
