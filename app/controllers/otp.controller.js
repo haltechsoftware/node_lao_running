@@ -35,7 +35,7 @@ exports.store = async (req, res, next) => {
       otp = await db.Otp.create({
         code: generateOtp(),
         phone: req.body.phone,
-        expired_at: new Date(new Date().getTime() + 30 * 60000).toISOString(), // 30 minutes from now
+        expired_at: new Date(new Date().getTime() + 3 * 60000).toISOString(), // 30 minutes from now
       });
 
       const isSent = await loginAndSendOtp(req.body.phone, otp.code);
@@ -148,7 +148,7 @@ exports.verifyOtp = async (req, res, next) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "3m",
+        expiresIn: "30m",
       },
     );
 
