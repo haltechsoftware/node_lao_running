@@ -6,6 +6,8 @@ exports.description = {
   _paymentDescription: (packageName) => {
     return `LaoRunning ${packageName} Package Subscription.`;
   },
+  _manualPaymentDescription: (packageName) =>
+    `Manual payment for ${packageName} package`,
 };
 
 exports.fail = {
@@ -27,6 +29,9 @@ exports.fail = {
   _existPhone: "This phone has aready used",
   _otp_not_sent: "Otp not sent.",
   _otp_invalid: "Invalid OTP.",
+  _paymentSlipRequired: "Payment slip is required",
+  _alreadyProcessed: "Payment has already been processed",
+  _reasonRequired: "Rejection reason is required",
 };
 
 exports.serverError = {

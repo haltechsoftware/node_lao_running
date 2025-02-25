@@ -22,6 +22,17 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
       });
 
+      // Add this new association
+      User.hasMany(models.ManualPayment, {
+        foreignKey: "user_id",
+      });
+
+      // Add this new association for approved_by relationship
+      User.hasMany(models.ManualPayment, {
+        foreignKey: "approved_by",
+        as: "ApprovedPayments",
+      });
+
       User.belongsToMany(models.Role, {
         through: models.RoleUser,
         foreignKey: "user_id",

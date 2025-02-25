@@ -13,6 +13,14 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "cascade",
         foreignKey: "package_id",
       });
+
+      // Add this new association
+      Package.hasMany(models.ManualPayment, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+        foreignKey: "package_id",
+      });
+
       Package.hasMany(models.PackageCompleteReward, {
         onDelete: "cascade",
         onUpdate: "cascade",

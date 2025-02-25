@@ -28,6 +28,9 @@ app.use(
   }),
 );
 
+import manual_payment from "./app/routes/manual_payment.routes";
+manual_payment(app);
+
 import otp from "./app/routes/otp.routes";
 otp(app);
 
