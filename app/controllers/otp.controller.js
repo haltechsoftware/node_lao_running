@@ -148,7 +148,7 @@ exports.verifyOtp = async (req, res, next) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "30m",
+        expiresIn: "3m",
       },
     );
 
