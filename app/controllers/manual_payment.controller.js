@@ -365,68 +365,68 @@ exports.approve = async (req, res, next) => {
       },
     );
 
-    // Get the user and update their package
-    const user = await db.User.findByPk(manualPayment.user_id);
+    // Find or create UserPackage
+    let userPackage = await db.UserPackage.findOne({
+      where: {
+        user_id: manualPayment.user_id,
+      },
+    });
 
-    if (user) {
-      await user.update(
-        {
-          package_id: manualPayment.package_id,
-        },
-        {
-          transaction: transaction,
-        },
-      );
+    const packageData = {
+      user_id: manualPayment.user_id,
+      package_id: manualPayment.package_id,
+      total: manualPayment.amount,
+      status: "success",
+      invoice_id: `MP-${manualPayment.id}-${Date.now()}`,
+      transaction_id: `MP-TRAN-${manualPayment.id}-${Date.now()}`,
+      terminal_id: `MP-TERM-${manualPayment.id}-${Date.now()}`,
+      ticket_id: `MP-TICKET-${manualPayment.id}-${Date.now()}`,
+    };
 
-      // Create or update UserPackage entry
-      const userPackage = await db.UserPackage.findOne({
-        where: {
-          user_id: manualPayment.user_id,
-        },
+    if (userPackage) {
+      await userPackage.update(packageData, {
+        transaction: transaction,
       });
-
-      if (userPackage) {
-        await userPackage.update(
-          {
-            package_id: manualPayment.package_id,
-            total: manualPayment.amount,
-            status: "success",
-            invoice_id: `MANUAL-${manualPayment.id}`,
-            transaction_id: `MANUAL-TRAN-${manualPayment.id}`,
-            terminal_id: `MANUAL-TERM-${manualPayment.id}`,
-          },
-          {
-            transaction: transaction,
-          },
-        );
-      } else {
-        await db.UserPackage.create(
-          {
-            user_id: manualPayment.user_id,
-            package_id: manualPayment.package_id,
-            total: manualPayment.amount,
-            status: "success",
-            invoice_id: `MANUAL-${manualPayment.id}`,
-            transaction_id: `MANUAL-TRAN-${manualPayment.id}`,
-            terminal_id: `MANUAL-TERM-${manualPayment.id}`,
-          },
-          {
-            transaction: transaction,
-          },
-        );
-      }
+    } else {
+      userPackage = await db.UserPackage.create(packageData, {
+        transaction: transaction,
+      });
     }
+
+    // Update user's package
+    await db.User.update(
+      {
+        package_id: manualPayment.package_id,
+      },
+      {
+        where: { id: manualPayment.user_id },
+        transaction: transaction,
+      },
+    );
 
     await transaction.commit();
 
     const updatedPayment = await db.ManualPayment.findOne({
-      where: {
-        id: id,
-      },
+      where: { id },
       include: [
         {
           model: db.User,
           attributes: ["id", "name", "email", "phone"],
+          include: [
+            {
+              model: db.UserPackage,
+              attributes: [
+                "package_id",
+                "status",
+                "transaction_id",
+                "ticket_id",
+              ],
+              include: {
+                model: db.Package,
+                attributes: ["name"],
+              },
+            },
+          ],
         },
         {
           model: db.Package,
