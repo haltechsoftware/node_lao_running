@@ -287,7 +287,30 @@ exports.login = async (req, res, next) => {
  */
 exports.me = async (req, res, next) => {
   try {
-    const userData = req.user;
+    const user = await db.User.findByPk(req.auth.id, {
+      include: [
+        {
+          model: db.Role,
+          through: { attributes: [] },
+        },
+        {
+          model: db.UserProfile,
+        },
+      ],
+    });
+
+    // Extract just the role names into a simple array
+    const roleNames = user.Roles.map((role) => role.name);
+
+    const userData = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role_name: roleNames, // Array of role names like ['admin', 'super_admin']
+      profile: user.UserProfile,
+    };
+
     return Response.success(res, Message.success._success, userData);
   } catch (error) {
     next(error);
