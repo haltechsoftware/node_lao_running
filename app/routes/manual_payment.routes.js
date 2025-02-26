@@ -4,6 +4,7 @@ import manualPaymentController from "../controllers/manual_payment.controller";
 import multer from "multer";
 import auth from "../middleware/auth.middleware";
 import { handleMulterError } from "../middleware/error.middleware";
+import role from "../middleware/role.middleware";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -45,13 +46,24 @@ module.exports = (app) => {
   router.get("/current", auth, manualPaymentController.getCurrentUserPayment);
 
   // Admin routes
-  router.get("/admin", auth, manualPaymentController.findAllAdmin);
+  router.get(
+    "/admin",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    manualPaymentController.findAllAdmin,
+  );
   router.get("/:id", auth, manualPaymentController.findOne);
-  router.put("/:id/approve", auth, manualPaymentController.approve);
+  router.put(
+    "/:id/approve",
+    auth,
+    role.hasRole(["Admin", "Super_Admin"]),
+    manualPaymentController.approve,
+  );
   router.put("/:id/reject", auth, manualPaymentController.reject);
   router.put(
     "/upload-slip",
     auth,
+    role.hasRole(["Admin", "Super_Admin"]),
     upload.single("payment_slip"),
     manualPaymentController.uploadSlip,
   );
