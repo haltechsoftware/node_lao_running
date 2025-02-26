@@ -14,6 +14,7 @@ const corsOptions = {
     "http://146.190.81.44:3000",
     "https://running.kaiymuan.com",
     "https://virtual-run.varilao.com",
+    "https://virtual-run.varilao.com/",
   ],
 };
 
