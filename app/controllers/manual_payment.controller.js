@@ -18,7 +18,7 @@ exports.create = async (req, res, next) => {
   let transaction;
   try {
     transaction = await db.sequelize.transaction();
-    const { package_id, amount, address } = req.body;
+    const { package_id, amount, address, size } = req.body;
 
     // Check for existing payment
     const existingPayment = await db.ManualPayment.findOne({
@@ -60,6 +60,7 @@ exports.create = async (req, res, next) => {
             package_id: package_id,
             amount: amount || runnerPackage.price,
             address: address,
+            size: size,
           },
           {
             transaction: transaction,
@@ -88,6 +89,7 @@ exports.create = async (req, res, next) => {
         package_id: package_id,
         amount: amount || runnerPackage.price,
         address: address,
+        size: size,
         payment_slip: payment_slip.secure_url,
         payment_slip_id: payment_slip.public_id,
       };
@@ -409,6 +411,19 @@ exports.approve = async (req, res, next) => {
         transaction: transaction,
       },
     );
+
+    // Update user profile with size if available
+    if (manualPayment.size) {
+      await db.UserProfile.update(
+        {
+          size_shirt: manualPayment.size,
+        },
+        {
+          where: { user_id: manualPayment.user_id },
+          transaction: transaction,
+        },
+      );
+    }
 
     await transaction.commit();
 
