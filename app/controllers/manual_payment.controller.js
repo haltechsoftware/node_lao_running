@@ -613,3 +613,50 @@ exports.uploadSlip = async (req, res, next) => {
       .json({ message: error.message || Message.fail._internalServerError });
   }
 };
+
+/**
+ * Get current user's payment and UserPackage
+ *
+ * @param {*} req
+ * @param {*} res
+ *
+ * @returns \app\helpers\response.helper
+ */
+exports.getCurrentUserPayment = async (req, res, next) => {
+  try {
+    // Get the most recent payment for the current user
+    const manualPayment = await db.ManualPayment.findOne({
+      where: {
+        user_id: req.user.user_id,
+      },
+      include: [
+        {
+          model: db.Package,
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    // Get the user's package information
+    const userPackage = await db.UserPackage.findOne({
+      where: {
+        user_id: req.user.user_id,
+      },
+      include: [
+        {
+          model: db.Package,
+        },
+      ],
+    });
+
+    // Combine the data
+    const responseData = {
+      manualPayment: manualPayment || null,
+      userPackage: userPackage || null,
+    };
+
+    return Response.success(res, Message.success._success, responseData);
+  } catch (error) {
+    next(error);
+  }
+};

@@ -41,6 +41,9 @@ module.exports = (app) => {
   );
   router.get("/", auth, manualPaymentController.findAll);
 
+  // Get current user payment with package
+  router.get("/current", auth, manualPaymentController.getCurrentUserPayment);
+
   // Admin routes
   router.get("/admin", auth, manualPaymentController.findAllAdmin);
   router.get("/:id", auth, manualPaymentController.findOne);
