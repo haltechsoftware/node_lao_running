@@ -4,6 +4,7 @@ import Status from "../helpers/status.helper";
 import Message from "../helpers/message.helper";
 import Image from "../helpers/upload.helper";
 import createError from "http-errors";
+import { Op } from "sequelize";
 
 /**
  * Create manual payment
@@ -134,7 +135,49 @@ exports.findAllAdmin = async (req, res, next) => {
     const per_page = Number.parseInt(req.query.per_page);
     let page = Number.parseInt(req.query.page);
     const status = req.query.status;
-    const condition = status ? { status: status } : {};
+    const search = req.query.search;
+
+    // Base condition
+    let condition = status ? { status: status } : {};
+
+    // Setup search query if provided
+    const searchCondition = search
+      ? {
+          "$User.name$": { [Op.like]: `%${search}%` },
+          "$User.email$": { [Op.like]: `%${search}%` },
+          "$User.phone$": { [Op.like]: `%${search}%` },
+        }
+      : {};
+
+    // If search is provided, we'll query based on OR conditions
+    const includeOptions = [
+      {
+        model: db.User,
+        attributes: ["id", "name", "email", "phone"],
+        include: {
+          model: db.UserProfile,
+          attributes: ["name", "surname", "gender", "profile_image"],
+        },
+        ...(search && {
+          where: {
+            [Op.or]: [
+              { name: { [Op.like]: `%${search}%` } },
+              { email: { [Op.like]: `%${search}%` } },
+              { phone: { [Op.like]: `%${search}%` } },
+            ],
+          },
+        }),
+      },
+      {
+        model: db.Package,
+        attributes: ["id", "name", "price"],
+      },
+      {
+        model: db.User,
+        as: "ApproveBy",
+        attributes: ["id", "name", "email"],
+      },
+    ];
 
     if (per_page) {
       const manualPaymentData = {};
@@ -142,29 +185,12 @@ exports.findAllAdmin = async (req, res, next) => {
 
       const manualPayments = await db.ManualPayment.findAndCountAll({
         where: condition,
-        include: [
-          {
-            model: db.User,
-            attributes: ["id", "name", "email", "phone"],
-            include: {
-              model: db.UserProfile,
-              attributes: ["name", "surname", "gender", "profile_image"],
-            },
-          },
-          {
-            model: db.Package,
-            attributes: ["id", "name", "price"],
-          },
-          {
-            model: db.User,
-            as: "ApproveBy",
-            attributes: ["id", "name", "email"],
-          },
-        ],
+        include: includeOptions,
         order: [["createdAt", "DESC"]],
         limit: per_page,
         offset: (page - 1) * per_page,
         subQuery: false,
+        distinct: true,
       });
 
       manualPaymentData.data = manualPayments.rows;
@@ -179,25 +205,7 @@ exports.findAllAdmin = async (req, res, next) => {
 
     const manualPayments = await db.ManualPayment.findAll({
       where: condition,
-      include: [
-        {
-          model: db.User,
-          attributes: ["id", "name", "email", "phone"],
-          include: {
-            model: db.UserProfile,
-            attributes: ["name", "surname", "gender", "profile_image"],
-          },
-        },
-        {
-          model: db.Package,
-          attributes: ["id", "name", "price"],
-        },
-        {
-          model: db.User,
-          as: "ApproveBy",
-          attributes: ["id", "name", "email"],
-        },
-      ],
+      include: includeOptions,
       order: [["createdAt", "DESC"]],
     });
 
