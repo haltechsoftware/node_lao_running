@@ -14,8 +14,9 @@ import createError from "http-errors";
  * @returns \app\helpers\response.helper
  */
 exports.create = async (req, res, next) => {
-  const transaction = await db.sequelize.transaction();
+  let transaction;
   try {
+    transaction = await db.sequelize.transaction();
     const { package_id, amount, address } = req.body;
 
     // Check for existing payment
@@ -113,13 +114,10 @@ exports.create = async (req, res, next) => {
         .json({ message: uploadError.message || "Error uploading file" });
     }
   } catch (error) {
-    console.error("Create payment error:", error);
     if (!transaction.finished) {
       await transaction.rollback();
     }
-    return res
-      .status(Status.code.InternalServerError)
-      .json({ message: error.message || Message.fail._internalServerError });
+    next(error);
   }
 };
 
