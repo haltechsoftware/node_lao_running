@@ -175,9 +175,24 @@ exports.getProfile = async (req, res, next) => {
       },
     });
 
+    // Get the most recent manual payment
+    const manualPayment = await db.ManualPayment.findOne({
+      where: {
+        user_id: req.user.user_id,
+      },
+      include: [
+        {
+          model: db.Package,
+          attributes: ["id", "name", "price"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
     const resData = userProfile.dataValues;
     resData.ranking = ranking;
     resData.package = userPackage;
+    resData.manualPayment = manualPayment || null;
 
     return Response.success(res, Message.success._success, resData);
   } catch (error) {
