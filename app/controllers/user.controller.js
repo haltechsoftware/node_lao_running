@@ -66,16 +66,16 @@ exports.validateSecond = async (req, res, next) => {
   const errors = {};
 
   try {
-    const email = req.body.email;
+    // const email = req.body.email;
 
-    if (
-      await User.findOne({
-        where: {
-          email: email,
-        },
-      })
-    )
-      errors.email = Message.validation("exists", '"email"');
+    // if (
+    //   await User.findOne({
+    //     where: {
+    //       email: email,
+    //     },
+    //   })
+    // )
+    //   errors.email = Message.validation("exists", '"email"');
 
     if (!Object.keys(errors).length)
       return Response.success(res, Message.success._success, {
@@ -140,13 +140,16 @@ exports.register = async (req, res, next) => {
 
     const phone = decodeData.phone.replace("+85620", "");
 
+    // Generate email if not provided
+    const userEmail = email || `${phone}@vari-run.com`;
+
     const encryptedPassword = password ? await bcrypt.hash(password, 10) : null;
 
     console.log({
       name: name,
       phone: phone,
       sub: decodeData.sub,
-      email: email,
+      email: userEmail,
       password: encryptedPassword,
       is_active: true,
     });
@@ -156,7 +159,7 @@ exports.register = async (req, res, next) => {
         name: name,
         phone: phone,
         sub: decodeData.sub,
-        email: email,
+        email: userEmail,
         password: encryptedPassword,
         is_active: true,
       },
@@ -196,7 +199,7 @@ exports.register = async (req, res, next) => {
     const token = jwt.sign(
       {
         user_id: user.id,
-        email,
+        email: userEmail,
       },
       process.env.JWT_SECRET,
       {
