@@ -140,19 +140,11 @@ exports.register = async (req, res, next) => {
 
     const phone = decodeData.phone.replace("+85620", "");
 
-    // Generate email if not provided
+    // Generate email if not provided or null
+    // Using phone number for auto-generated email
     const userEmail = email || `${phone}@vari-run.com`;
 
     const encryptedPassword = password ? await bcrypt.hash(password, 10) : null;
-
-    console.log({
-      name: name,
-      phone: phone,
-      sub: decodeData.sub,
-      email: userEmail,
-      password: encryptedPassword,
-      is_active: true,
-    });
 
     const user = await db.User.create(
       {

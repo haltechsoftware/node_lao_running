@@ -22,7 +22,7 @@ exports.login = validator.validateDefault({
 
 exports.secondStep = validator.validateDefault({
   body: Joi.object({
-    email: Joi.string().email().required(),
+    email: Joi.string().email().optional().allow(null, ""),
     password: Joi.string()
       .min(8)
       .regex(/[a-zA-Z0-9]{3,30}/)
@@ -62,7 +62,7 @@ exports.lastStep = validator.validateDefault({
     national_id: Joi.number().required(),
     dob: Joi.date().required(),
     gender: Joi.string().required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().email().optional().allow(null, ""),
     password: Joi.string()
       .min(8)
       .regex(/[a-zA-Z0-9]{3,30}/)
