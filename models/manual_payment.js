@@ -55,6 +55,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
+      size: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       payment_slip: {
         type: DataTypes.STRING,
         allowNull: false,
