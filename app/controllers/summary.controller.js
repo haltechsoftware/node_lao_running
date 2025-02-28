@@ -76,7 +76,7 @@ exports.totalRange = async (req, res, next) => {
     });
 
     // Get total count of runners
-    const totalRunners = await db.Ranking.count({
+    const totalRunners = await db.UserProfile.count({
       distinct: true,
       col: "user_id",
     });
