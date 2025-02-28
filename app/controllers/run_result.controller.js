@@ -147,8 +147,8 @@ exports.update = async (req, res, next) => {
     const previousStatus = runResult.status;
     runResult.status = req.body.status;
 
-    if (req.body.status === "approved" && previousStatus !== "approved") {
-      // Only update ranking when status changes to approved
+    if (req.body.status === "approve" && previousStatus !== "approve") {
+      // Only update ranking when status changes to approve
       let ranking = await db.Ranking.findOne({
         where: {
           user_id: runResult.user_id,
