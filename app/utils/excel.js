@@ -30,14 +30,26 @@ export const parseExcelFile = async (filePath) => {
           const fullNameValue = row.getCell(1).value?.toString().trim() || "";
           let name, surname;
 
-          if (fullNameValue.includes(" ")) {
+          // Define common Lao name prefixes
+          const laoPrefixes = ["ທ ", "ທ້າວ ", "ນ ", "ນາງ ", "ທ.", "ນ."];
+
+          // Remove prefix if it exists
+          let cleanName = fullNameValue;
+          for (const prefix of laoPrefixes) {
+            if (cleanName.startsWith(prefix)) {
+              cleanName = cleanName.substring(prefix.length).trim();
+              break; // Stop after first match
+            }
+          }
+
+          if (cleanName.includes(" ")) {
             // Split by space if space exists
-            const nameParts = fullNameValue.split(/\s+/);
+            const nameParts = cleanName.split(/\s+/);
             name = nameParts[0];
             surname = nameParts.slice(1).join(" ");
           } else {
             // If no space, use the full value as name and phone as surname
-            name = fullNameValue;
+            name = cleanName;
             const phone = row.getCell(6).value?.toString().trim() || "";
             surname = phone;
           }
@@ -169,6 +181,17 @@ export const processRunners = async (runnerData) => {
         // Assign User role
         const userRole = await db.Role.findOne({ where: { name: "User" } });
         await user.addRole(userRole, { transaction });
+
+        console.log({
+          name: runner.name,
+          surname: runner.surname,
+          gender: runner.gender,
+          dob: new Date(runner.dob || Date.now()),
+          national_id: runner.national_id,
+          range: runner.range,
+          size_shirt: runner.size_shirt,
+          bib: user.id.toString().padStart(5, "0"),
+        });
 
         // Create user profile
         await user.createUserProfile(
