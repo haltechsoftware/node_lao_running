@@ -4,7 +4,7 @@ info:
   description: API documentation for Lao Running application
   version: 1.0.0
 servers:
-  - url: /api/v1
+  - url: /api
     description: Default API path
 components:
   securitySchemes:
