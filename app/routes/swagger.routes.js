@@ -5,7 +5,7 @@ import basicAuth from "express-basic-auth";
 module.exports = (app) => {
   // Basic auth middleware for Swagger UI in production
   const swaggerAuth = basicAuth({
-    users: { admin: process.env.SWAGGER_PASSWORD || "leenaa" },
+    users: { admin: process.env.SWAGGER_PASSWORD || "laorundocs" },
     challenge: true,
     realm: "Lao Running API Documentation",
   });
