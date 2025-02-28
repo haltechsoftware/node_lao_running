@@ -56,4 +56,5 @@ jobs:
             echo "HAL_SMS_URL=${{ secrets.HAL_SMS_URL }}" >> .env
             npm i
             npm run migrate
+            npm run fix:package
             pm2 restart "api" || pm2 start npm --name "api" -- run start
