@@ -66,6 +66,10 @@ user(app);
 import runner from "./app/routes/runner.routes";
 runner(app);
 
+// Add runner import routes
+import runner_import from "./app/routes/runner_import.routes";
+runner_import(app);
+
 import info from "./app/routes/info.routes";
 info(app);
 
