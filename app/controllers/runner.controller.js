@@ -8,6 +8,7 @@ import UniqueId from "../helpers/uniqueId.helper";
 import QRCode from "qrcode";
 import createError from "http-errors";
 import axios from "axios";
+import { Op } from "sequelize";
 
 /**
  * Update User Profile.
@@ -433,16 +434,21 @@ exports.payBcelQr = async (req, res, next) => {
 exports.getAllRunner = async (req, res, next) => {
   try {
     const bib = req.query.bib;
+    const name = req.query.name;
+    const phone = req.query.phone;
+    const gender = req.query.gender;
     const package_runner = req.query.package_runner;
 
-    const condition = bib
-      ? {
-          bib: bib,
-        }
-      : null;
+    // Build condition for user profile filters
+    const condition = {};
+    if (bib) condition.bib = bib;
+    if (gender) condition.gender = gender;
 
-    let package_runnerCondition = null;
+    // Build condition for user information filters
+    const userCondition = {};
+    if (phone) userCondition.phone = phone;
 
+    let package_runnerCondition = {};
     if (package_runner) {
       package_runnerCondition =
         package_runner == "free"
@@ -452,6 +458,9 @@ exports.getAllRunner = async (req, res, next) => {
           : {
               package_id: package_runner,
             };
+
+      // Merge with existing user conditions
+      Object.assign(userCondition, package_runnerCondition);
     }
 
     const include = [
@@ -460,7 +469,7 @@ exports.getAllRunner = async (req, res, next) => {
       },
       {
         model: db.User,
-        where: package_runnerCondition,
+        where: userCondition,
         required: true,
         attributes: ["id", "name", "email", "phone"],
         include: [
@@ -480,9 +489,18 @@ exports.getAllRunner = async (req, res, next) => {
       },
     ];
 
+    // Add name search to the query if provided
+    if (name) {
+      // Search in both name and surname fields
+      condition[Op.or] = [
+        { name: { [Op.like]: `%${name}%` } },
+        { surname: { [Op.like]: `%${name}%` } },
+      ];
+    }
+
     const orderCondition = [["id", "DESC"]];
 
-    // Pagiate
+    // Paginate
     const per_page = Number.parseInt(req.query.per_page);
     let page = Number.parseInt(req.query.page);
 
