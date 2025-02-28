@@ -568,7 +568,7 @@ exports.resetPasswordUser = async (req, res, next) => {
   try {
     const { id_token, password } = req.body;
 
-    const decodeData = Otp.verify(id_token);
+    const decodeData = verifyToken(id_token);
 
     if (!decodeData)
       return res
@@ -577,7 +577,7 @@ exports.resetPasswordUser = async (req, res, next) => {
 
     const existUser = await db.User.findOne({
       where: {
-        sub: decodeData.sub,
+        phone: decodeData.phone,
       },
       include: {
         require: true,
