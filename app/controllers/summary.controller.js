@@ -75,7 +75,19 @@ exports.totalRange = async (req, res, next) => {
       ],
     });
 
-    return Response.success(res, Message.success._success, totalRange);
+    // Get total count of runners
+    const totalRunners = await db.Ranking.count({
+      distinct: true,
+      col: "user_id",
+    });
+
+    // Combine the data
+    const responseData = {
+      ...totalRange[0].dataValues,
+      total_runners: totalRunners,
+    };
+
+    return Response.success(res, Message.success._success, responseData);
   } catch (error) {
     next(error);
   }
