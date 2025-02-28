@@ -306,6 +306,44 @@ exports.me = async (req, res, next) => {
       profile: user.UserProfile,
     };
 
+    // Check if user has a runner role (to add runner-specific data)
+    if (roleNames.includes("User")) {
+      // Get ranking data
+      const ranking = await db.Ranking.findOne({
+        where: { user_id: user.id },
+        attributes: ["total_range", "total_time"],
+      });
+
+      // Get package data
+      const userPackage = await db.UserPackage.findOne({
+        where: { user_id: user.id },
+        attributes: ["package_id", "status", "transaction_id"],
+        include: {
+          model: db.Package,
+          attributes: ["name"],
+        },
+      });
+
+      // Get latest manual payment
+      const manualPayment = await db.ManualPayment.findOne({
+        where: { user_id: user.id },
+        include: [
+          {
+            model: db.Package,
+            attributes: ["id", "name", "price"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+
+      // Add runner data to response
+      userData.runner = {
+        ranking: ranking,
+        package: userPackage,
+        manualPayment: manualPayment || null,
+      };
+    }
+
     return Response.success(res, Message.success._success, userData);
   } catch (error) {
     next(error);
