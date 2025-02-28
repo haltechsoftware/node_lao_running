@@ -1,13 +1,22 @@
-import express from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../config/swagger.js";
-
-const router = express.Router();
+import basicAuth from "express-basic-auth";
 
 module.exports = (app) => {
-  // Mount Swagger UI
+  // Basic auth middleware for Swagger UI in production
+  const swaggerAuth = basicAuth({
+    users: { admin: process.env.SWAGGER_PASSWORD || "leenaa" },
+    challenge: true,
+    realm: "Lao Running API Documentation",
+  });
+
+  // Apply authentication middleware only in production
+  const swaggerMiddleware = [swaggerAuth];
+
+  // Mount Swagger UI with conditional authentication
   app.use(
     "/api-docs",
+    ...swaggerMiddleware,
     swaggerUi.serve,
     swaggerUi.setup(swaggerDocument, {
       explorer: true,
@@ -16,13 +25,13 @@ module.exports = (app) => {
     }),
   );
 
-  // Redirect root to API docs
-  app.get("/docs", (req, res) => {
+  // Redirect /docs to /api-docs with the same auth requirements
+  app.get("/docs", ...swaggerMiddleware, (req, res) => {
     res.redirect("/api-docs");
   });
 
-  // Raw swagger.json endpoint
-  app.get("/swagger.json", (req, res) => {
+  // Raw swagger.json endpoint, also protected in production
+  app.get("/swagger.json", ...swaggerMiddleware, (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerDocument);
   });

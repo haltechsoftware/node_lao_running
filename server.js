@@ -4,8 +4,9 @@ import "dotenv/config";
 import createError from "http-errors";
 import Response from "./app/helpers/response.helper";
 import Message from "./app/helpers/message.helper";
-import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./app/config/swagger.js";
+// Remove direct swagger imports as they'll be handled through routes
+// import swaggerUi from "swagger-ui-express";
+// import swaggerDocument from "./app/config/swagger.js";
 
 const { ValidationError } = require("express-validation");
 const app = express();
@@ -33,22 +34,25 @@ app.use(
   }),
 );
 
-// Setup Swagger UI
-app.use(
-  "/api-docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, {
-    explorer: true,
-    customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Lao Running API Documentation",
-  }),
-);
+// Remove direct Swagger UI setup as it's now in swagger.routes.js
+// app.use(
+//   "/api-docs",
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerDocument, {
+//     explorer: true,
+//     customCss: ".swagger-ui .topbar { display: none }",
+//     customSiteTitle: "Lao Running API Documentation",
+//   }),
 
 import manual_payment from "./app/routes/manual_payment.routes";
 manual_payment(app);
 
 import otp from "./app/routes/otp.routes";
 otp(app);
+
+// Add swagger routes
+import swagger from "./app/routes/swagger.routes";
+swagger(app);
 
 import admin from "./app/routes/admin_result.routes";
 admin(app);
