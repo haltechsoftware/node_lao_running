@@ -373,6 +373,9 @@ exports.findAllImage = async (req, res, next) => {
       const totalCount = Object.keys(runImages).length;
 
       runImages = await db.RunResult.findAll({
+        where: {
+          status: "approve",
+        },
         limit: per_page,
         offset: (page - 1) * per_page,
         subQuery: false,

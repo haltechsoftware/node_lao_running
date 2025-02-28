@@ -43,37 +43,10 @@ exports.create = async (req, res, next) => {
       },
     );
 
-    let ranking = await db.Ranking.findOne({
-      where: {
-        user_id: req.user.user_id,
-      },
-    });
-    if (!ranking) {
-      ranking = await db.Ranking.create(
-        {
-          user_id: req.user.user_id,
-        },
-        {
-          transaction: transaction,
-        },
-      );
-    }
-
-    await ranking.increment(
-      {
-        total_range: range,
-        total_time: time,
-      },
-      {
-        transaction: transaction,
-      },
-    );
-
     await transaction.commit();
 
     return Response.success(res, Message.success._success, {
       runResult,
-      ranking: ranking,
     });
   } catch (error) {
     if (!transaction.finished) {
@@ -167,13 +140,58 @@ exports.findOne = async (req, res, next) => {
 };
 
 // Update a RunResult by the id in the request
-exports.update = async (req, res) => {
-  const runResult = await db.RunResult.findByPk(req.params.id);
-  runResult.status = req.body.status;
+exports.update = async (req, res, next) => {
+  const transaction = await db.sequelize.transaction();
+  try {
+    const runResult = await db.RunResult.findByPk(req.params.id);
+    const previousStatus = runResult.status;
+    runResult.status = req.body.status;
 
-  await runResult.save();
+    if (req.body.status === "approved" && previousStatus !== "approved") {
+      // Only update ranking when status changes to approved
+      let ranking = await db.Ranking.findOne({
+        where: {
+          user_id: runResult.user_id,
+        },
+        transaction: transaction,
+      });
 
-  return Response.success(res, Message.success._success, runResult);
+      if (!ranking) {
+        ranking = await db.Ranking.create(
+          {
+            user_id: runResult.user_id,
+          },
+          {
+            transaction: transaction,
+          },
+        );
+      }
+
+      await ranking.increment(
+        {
+          total_range: runResult.range,
+          total_time: runResult.time,
+        },
+        {
+          transaction: transaction,
+        },
+      );
+    }
+
+    if (req.body.reject_description) {
+      runResult.reject_description = req.body.reject_description;
+    }
+
+    await runResult.save({ transaction });
+    await transaction.commit();
+
+    return Response.success(res, Message.success._success, runResult);
+  } catch (error) {
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
+    next(error);
+  }
 };
 
 // Delete a RunResult with the specified id in the request
