@@ -414,9 +414,11 @@ exports.approve = async (req, res, next) => {
 
     // Update user profile with size if available
     if (manualPayment.size) {
+      const packageData = await db.Package.findByPk(manualPayment.package_id);
       await db.UserProfile.update(
         {
           size_shirt: manualPayment.size,
+          range: packageData?.range?.toString() || "free",
         },
         {
           where: { user_id: manualPayment.user_id },
