@@ -62,6 +62,9 @@ export const parseExcelFile = async (filePath) => {
             gender = "male"; // Default to male
           }
 
+          // Extract package name from cell 9
+          const packageName = row.getCell(9).value?.toString().trim() || "";
+
           const range =
             row.getCell(9).value?.toString().toLowerCase().trim() || "free";
 
@@ -81,6 +84,8 @@ export const parseExcelFile = async (filePath) => {
             national_id: 126, // Default to Laos if not specified
             range: validRange,
             size_shirt: row.getCell(8).value?.toString().trim() || null,
+            address: row.getCell(7).value?.toString().trim() || "N/A",
+            package_name: packageName, // Add package name
           };
 
           console.log("runner", runner);
@@ -182,16 +187,19 @@ export const processRunners = async (runnerData) => {
         const userRole = await db.Role.findOne({ where: { name: "User" } });
         await user.addRole(userRole, { transaction });
 
-        console.log({
-          name: runner.name,
-          surname: runner.surname,
-          gender: runner.gender,
-          dob: new Date(runner.dob || Date.now()),
-          national_id: runner.national_id,
-          range: runner.range,
-          size_shirt: runner.size_shirt,
-          bib: user.id.toString().padStart(5, "0"),
-        });
+        // Find package by name
+        let userPackage = null;
+        if (runner.package_name) {
+          userPackage = await db.Package.findOne({
+            where: { name: runner.package_name },
+          });
+
+          if (!userPackage) {
+            console.warn(
+              `Package "${runner.package_name}" not found. Using default package.`,
+            );
+          }
+        }
 
         // Create user profile
         await user.createUserProfile(
@@ -216,6 +224,46 @@ export const processRunners = async (runnerData) => {
           },
           { transaction },
         );
+
+        // Create payment and assign package if package exists
+        if (userPackage) {
+          // Create manual payment record as approved
+          await db.ManualPayment.create(
+            {
+              user_id: user.id,
+              package_id: userPackage.id,
+              amount: userPackage.price || 0,
+              status: "approved",
+              approved_by: 1, // Admin ID, assuming ID 1 is admin
+              payment_slip:
+                "https://static.cdnlogo.com/logos/m/24/mastercard.svg",
+              payment_slip_id:
+                "https://static.cdnlogo.com/logos/m/24/mastercard.svg",
+              notes: "Auto-approved from Excel import",
+              address: runner.address,
+              size: runner.size_shirt,
+            },
+            { transaction },
+          );
+
+          // Create UserPackage record
+          await db.UserPackage.create(
+            {
+              user_id: user.id,
+              package_id: userPackage.id,
+              total: userPackage.price || 0,
+              status: "success",
+              invoice_id: `EXCEL-${user.id}-${Date.now()}`,
+              transaction_id: `EXCEL-TRAN-${user.id}-${Date.now()}`,
+              terminal_id: `EXCEL-TERM-${user.id}-${Date.now()}`,
+              ticket_id: `EXCEL-TICKET-${user.id}-${Date.now()}`,
+            },
+            { transaction },
+          );
+
+          // Update user's package association
+          await user.update({ package_id: userPackage.id }, { transaction });
+        }
 
         await transaction.commit();
         results.imported++;
