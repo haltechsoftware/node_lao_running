@@ -20,6 +20,9 @@ exports.importRunners = async (req, res, next) => {
         .json({ message: "Please upload an Excel file" });
     }
 
+    console.log(
+      `Processing file: ${req.file.originalname} (${req.file.mimetype})`,
+    );
     const filePath = req.file.path;
 
     try {
@@ -32,6 +35,8 @@ exports.importRunners = async (req, res, next) => {
           .json({ message: "No valid runner data found in the file" });
       }
 
+      console.log(`Found ${runnerData.length} runners in the Excel file`);
+
       // Process the runner data
       const results = await processRunners(runnerData);
 
@@ -42,13 +47,23 @@ exports.importRunners = async (req, res, next) => {
 
       return Response.success(res, Message.success._success, results);
     } catch (error) {
+      console.error("Error processing Excel file:", error);
+
       // Delete the temporary file in case of error
-      fs.unlink(filePath, (err) => {
-        if (err) console.error("Error deleting temp file:", err);
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+          if (err) console.error("Error deleting temp file:", err);
+        });
+      }
+
+      return res.status(Status.code.BadRequest).json({
+        message: "Failed to process Excel file",
+        error: error.message,
+        details: "Please ensure you're using the correct template format",
       });
-      throw error;
     }
   } catch (error) {
+    console.error("Unhandled error in importRunners:", error);
     next(error);
   }
 };

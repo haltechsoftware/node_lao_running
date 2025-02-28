@@ -9,39 +9,101 @@ import { v4 as uuidv4 } from "uuid";
  * @returns {Promise<Array>} Array of parsed runner data
  */
 export const parseExcelFile = async (filePath) => {
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(filePath);
+  console.log(`Parsing Excel file: ${filePath}`);
+  try {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.readFile(filePath);
 
-  const worksheet = workbook.worksheets[0];
-  const runners = [];
-
-  // Skip header row
-  worksheet.eachRow((row, rowIndex) => {
-    if (rowIndex > 1) {
-      // Skip header row
-      const runner = {
-        name: row.getCell(1).value?.toString().trim(),
-        surname: row.getCell(2).value?.toString().trim(),
-        phone: row.getCell(3).value?.toString().trim(),
-        email: row.getCell(4).value?.toString().trim() || null,
-        gender:
-          row.getCell(5).value?.toString().toLowerCase() === "ຍິງ"
-            ? "female"
-            : "male",
-        dob: row.getCell(6).value || null, // Assuming ISO date format
-        national_id: row.getCell(7).value || 126, // Default to Laos if not specified
-        range: row.getCell(8).value?.toString().trim() || "free",
-        size_shirt: row.getCell(9).value?.toString().trim() || null,
-      };
-
-      // Validate required fields
-      if (runner.name && runner.surname && runner.phone) {
-        runners.push(runner);
-      }
+    const worksheet = workbook.worksheets[0];
+    if (!worksheet) {
+      throw new Error("Excel file does not contain any worksheets");
     }
-  });
 
-  return runners;
+    const runners = [];
+    const skippedRows = [];
+
+    // Skip header row
+    worksheet.eachRow((row, rowIndex) => {
+      if (rowIndex > 1) {
+        // Skip header row
+        try {
+          const fullNameValue = row.getCell(1).value?.toString().trim() || "";
+          let name, surname;
+
+          if (fullNameValue.includes(" ")) {
+            // Split by space if space exists
+            const nameParts = fullNameValue.split(/\s+/);
+            name = nameParts[0];
+            surname = nameParts.slice(1).join(" ");
+          } else {
+            // If no space, use the full value as name and phone as surname
+            name = fullNameValue;
+            const phone = row.getCell(6).value?.toString().trim() || "";
+            surname = phone;
+          }
+          const phone = row.getCell(6).value?.toString().trim();
+
+          let gender = row.getCell(2).value?.toString().toLowerCase();
+          if (gender === "ຍິງ" || gender === "female" || gender === "f") {
+            gender = "female";
+          } else {
+            gender = "male"; // Default to male
+          }
+
+          const range =
+            row.getCell(9).value?.toString().toLowerCase().trim() || "free";
+
+          // Validate range values
+          let validRange = range;
+          if (!["free", "15", "42", "100", "200"].includes(range)) {
+            validRange = "free";
+          }
+
+          const runner = {
+            name: name,
+            surname: surname,
+            phone: phone,
+            email: row.getCell(5).value?.toString().trim() || null,
+            gender: gender,
+            dob: row.getCell(3).value || null, // Assuming ISO date format
+            national_id: 126, // Default to Laos if not specified
+            range: validRange,
+            size_shirt: row.getCell(8).value?.toString().trim() || null,
+          };
+
+          console.log("runner", runner);
+
+          // Validate required fields
+          if (runner.name && runner.surname && runner.phone) {
+            runners.push(runner);
+          } else {
+            skippedRows.push({
+              rowIndex,
+              reason: "Missing required fields (name, surname, or phone)",
+            });
+          }
+        } catch (error) {
+          console.error(`Error parsing row ${rowIndex}:`, error);
+          skippedRows.push({
+            rowIndex,
+            reason: `Error parsing data: ${error.message}`,
+          });
+        }
+      }
+    });
+
+    console.log(
+      `Successfully parsed ${runners.length} runners, skipped ${skippedRows.length} rows`,
+    );
+    if (skippedRows.length > 0) {
+      console.log("Skipped rows:", skippedRows);
+    }
+
+    return runners;
+  } catch (error) {
+    console.error("Excel parsing error:", error);
+    throw new Error(`Failed to parse Excel file: ${error.message}`);
+  }
 };
 
 /**
