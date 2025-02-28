@@ -1357,11 +1357,11 @@ paths:
                 $ref: '#/components/schemas/Error'
 
   # Info Controller
-  /info/packages:
+  /info/package:
     get:
       tags:
         - Info
-      summary: Get all packages
+      summary: Get all package
       parameters:
         - name: per_page
           in: query
@@ -1373,13 +1373,13 @@ paths:
             type: integer
       responses:
         '200':
-          description: Packages retrieved successfully
+          description: Package retrieved successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Success'
 
-  /info/packages/{id}:
+  /info/package/{id}:
     get:
       tags:
         - Info
