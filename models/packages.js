@@ -60,6 +60,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
+      range: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

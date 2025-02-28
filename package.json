@@ -49,6 +49,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec babel-node server.js",
     "start": "nodemon --exec babel-node server.js",
+    "fix:package": "babel-node scrypt/fixRange.js",
     "fake:runner": "babel-node scrypt/fakeRunner.js",
     "fake:freeRunner": "babel-node scrypt/fakeFreeRunner.js",
     "generate:template": "babel-node generate-template.js",

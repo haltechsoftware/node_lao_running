@@ -75,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       range: {
         type: DataTypes.ENUM,
-        values: ["free", "15", "42", "100", "200"],
+        values: ["free", "15", "42", "100", "200", "40", "90"],
         allowNull: true,
         defaultValue: "free",
       },
