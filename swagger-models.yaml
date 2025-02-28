@@ -1,0 +1,449 @@
+# This file contains detailed model definitions for the API
+
+components:
+  schemas:
+    # Core entity models
+    DetailedUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user
+        name:
+          type: string
+          description: User's name
+        email:
+          type: string
+          description: User's email address
+        phone:
+          type: string
+          description: User's phone number
+        sub:
+          type: string
+          description: Subject identifier from authentication provider
+        password:
+          type: string
+          description: Hashed password (never returned in responses)
+          readOnly: true
+        is_active:
+          type: boolean
+          description: Whether the user account is active
+        package_id:
+          type: integer
+          description: ID of the user's current package
+          nullable: true
+        resetPasswordAt:
+          type: integer
+          description: Timestamp when password was last reset
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+          description: Foreign key to User
+        name:
+          type: string
+        surname:
+          type: string
+        gender:
+          type: string
+          enum: ["male", "female", "other"]
+        national_id:
+          type: string
+          description: National identification number
+        dob:
+          type: string
+          format: date
+          description: Date of birth
+        bib:
+          type: string
+          description: Runner's bib number
+        profile_image:
+          type: string
+          nullable: true
+          description: URL to profile image
+        profile_image_id:
+          type: string
+          nullable: true
+          description: Cloud provider ID for the profile image
+        hal_branche_id:
+          type: integer
+          nullable: true
+          description: Branch ID where shirt can be collected
+        range:
+          type: string
+          description: Running category/range
+          nullable: true
+        size_shirt:
+          type: string
+          nullable: true
+          description: T-shirt size preference
+
+    RunResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+          description: Foreign key to User
+        range:
+          type: number
+          format: float
+          description: Distance covered in kilometers
+        time:
+          type: integer
+          description: Time taken in seconds
+        image:
+          type: string
+          nullable: true
+          description: URL to run result image/screenshot
+        image_id:
+          type: string
+          nullable: true
+          description: Cloud provider ID for the image
+        status:
+          type: string
+          enum: ["pending", "approve", "reject"]
+          description: Status of the run result validation
+        reject_description:
+          type: string
+          nullable: true
+          description: Reason for rejection if status is 'reject'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Ranking:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+          description: Foreign key to User
+        total_range:
+          type: number
+          format: float
+          description: Total distance covered in kilometers
+        total_time:
+          type: integer
+          description: Total time taken in seconds
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Package:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Package name
+        description:
+          type: string
+          description: Package description
+        price:
+          type: number
+          description: Package price
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PackageRegisterReward:
+      type: object
+      properties:
+        id:
+          type: integer
+        package_id:
+          type: integer
+          description: Foreign key to Package
+        reward:
+          type: string
+          description: Reward given upon registration
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PackageCompleteReward:
+      type: object
+      properties:
+        id:
+          type: integer
+        package_id:
+          type: integer
+          description: Foreign key to Package
+        reward:
+          type: string
+          description: Reward given upon completion
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PackageImage:
+      type: object
+      properties:
+        id:
+          type: integer
+        package_id:
+          type: integer
+          description: Foreign key to Package
+        image:
+          type: string
+          description: URL to package image
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserPackage:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+          description: Foreign key to User
+        package_id:
+          type: integer
+          description: Foreign key to Package
+        total:
+          type: number
+          description: Total amount paid
+        status:
+          type: string
+          enum: ["pending", "success", "failed"]
+          description: Payment status
+        transaction_id:
+          type: string
+          description: Payment transaction ID
+        invoice_id:
+          type: string
+          description: Invoice ID
+        terminal_id:
+          type: string
+          description: Terminal ID for payment
+        ticket_id:
+          type: string
+          nullable: true
+          description: Ticket ID from payment provider
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ManualPayment:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+          description: Foreign key to User
+        package_id:
+          type: integer
+          description: Foreign key to Package
+        amount:
+          type: number
+          description: Payment amount
+        address:
+          type: string
+          nullable: true
+          description: Delivery address for package items
+        size:
+          type: string
+          nullable: true
+          description: T-shirt size preference
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected"]
+          description: Approval status
+        payment_slip:
+          type: string
+          description: URL to payment slip image
+        payment_slip_id:
+          type: string
+          description: Cloud provider ID for payment slip
+        notes:
+          type: string
+          nullable: true
+          description: Admin notes about payment
+        approved_by:
+          type: integer
+          nullable: true
+          description: User ID of admin who processed the payment
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    HalBranche:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Branch name
+        address:
+          type: string
+          description: Branch address
+        phone:
+          type: string
+          description: Branch contact phone
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Otp:
+      type: object
+      properties:
+        id:
+          type: integer
+        phone:
+          type: string
+          description: Phone number
+        code:
+          type: string
+          description: OTP code
+        expired_at:
+          type: string
+          format: date-time
+          description: When the OTP expires
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the OTP was verified
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Video:
+      type: object
+      properties:
+        id:
+          type: integer
+        link:
+          type: string
+          description: Video link/URL
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Contact name
+        surname:
+          type: string
+          description: Contact surname
+        phone:
+          type: string
+          description: Contact phone number
+        message:
+          type: string
+          description: Contact message
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    National:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Country name
+        code:
+          type: string
+          description: Country code
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: Role name (e.g., 'Admin', 'User')
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Sumary:
+      type: object
+      properties:
+        id:
+          type: integer
+        target_range:
+          type: number
+          format: float
+          description: Target total distance for the event
+        target_time:
+          type: integer
+          description: Target total time for the event in seconds
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

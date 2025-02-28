@@ -1,0 +1,405 @@
+# This file contains extensions to the main Swagger documentation
+
+components:
+  schemas:
+    # Additional response schemas
+    PaginatedResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Success"
+        data:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+            pagination:
+              type: object
+              properties:
+                total:
+                  type: integer
+                  example: 100
+                per_page:
+                  type: integer
+                  example: 10
+                total_pages:
+                  type: integer
+                  example: 10
+                current_page:
+                  type: integer
+                  example: 1
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "John"
+        email:
+          type: string
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "2055551234"
+        role_name:
+          type: array
+          items:
+            type: string
+          example: ["User"]
+        profile:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            surname:
+              type: string
+            gender:
+              type: string
+            dob:
+              type: string
+              format: date
+            profile_image:
+              type: string
+              nullable: true
+
+    RunResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        range:
+          type: number
+          format: float
+        time:
+          type: integer
+        image:
+          type: string
+          nullable: true
+        image_id:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: ["pending", "approve", "reject"]
+        reject_description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ManualPayment:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        package_id:
+          type: integer
+        amount:
+          type: number
+        address:
+          type: string
+          nullable: true
+        size:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected"]
+        payment_slip:
+          type: string
+        payment_slip_id:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        Package:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            price:
+              type: number
+
+    Package:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        PackageRegisterRewards:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              reward:
+                type: string
+        PackageCompleteRewards:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              reward:
+                type: string
+        PackageImages:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              image:
+                type: string
+
+  examples:
+    LoginSuccess:
+      value:
+        success: true
+        message: "Success"
+        data:
+          id: 1
+          name: "John Doe"
+          email: "john@example.com"
+          phone: "2055551234"
+          role:
+            - id: 2
+              name: "User"
+          token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    UserProfile:
+      value:
+        success: true
+        message: "Success"
+        data:
+          id: 1
+          user_id: 1
+          name: "John"
+          surname: "Doe"
+          gender: "male"
+          dob: "1990-01-01"
+          national_id: "123456789"
+          bib: "00001"
+          profile_image: "https://example.com/profile.jpg"
+          hal_branche_id: 1
+          size_shirt: "L"
+          HalBranche:
+            id: 1
+            name: "Main Branch"
+            address: "123 Main St"
+          ranking:
+            total_range: 42.5
+            total_time: 12600
+          package:
+            package_id: 1
+            status: "success"
+            transaction_id: "TRAN123456"
+            Package:
+              name: "Premium Package"
+
+    RunResults:
+      value:
+        success: true
+        message: "Success"
+        data:
+          data:
+            - id: 1
+              user_id: 1
+              range: 5.2
+              time: 1800
+              image: "https://example.com/run1.jpg"
+              status: "approve"
+              createdAt: "2023-06-01T08:30:00Z"
+              updatedAt: "2023-06-01T08:35:00Z"
+            - id: 2
+              user_id: 1
+              range: 3.7
+              time: 1200
+              image: "https://example.com/run2.jpg"
+              status: "pending"
+              createdAt: "2023-06-02T08:30:00Z"
+              updatedAt: "2023-06-02T08:35:00Z"
+          pagination:
+            total: 10
+            per_page: 2
+            total_pages: 5
+            current_page: 1
+
+paths:
+  # Expanded documentation for specific endpoints with examples
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user information
+      description: |
+        Returns detailed information about the currently authenticated user,
+        including their profile, roles, and any associated package information.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Success"
+              examples:
+                response:
+                  $ref: "#/components/examples/UserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: "Unauthorized access"
+
+  /run-results:
+    get:
+      description: |
+        Retrieves all run results for the currently authenticated user.
+        Results can be filtered by status and paginated.
+      parameters:
+        - name: per_page
+          in: query
+          description: Number of records per page
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: status
+          in: query
+          description: Filter results by status
+          schema:
+            type: string
+            enum: ["pending", "approve", "reject"]
+      responses:
+        "200":
+          description: Run results retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResponse"
+              examples:
+                response:
+                  $ref: "#/components/examples/RunResults"
+
+  /info/ranking:
+    get:
+      description: |
+        Returns a ranking list of all runners based on their total distance.
+        Rankings can be filtered by range category and paginated.
+        If a BIB number is provided, only the ranking for that specific runner will be returned.
+      parameters:
+        - name: per_page
+          in: query
+          description: Number of records per page
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: range
+          in: query
+          description: Filter by range category
+          schema:
+            type: string
+        - name: bib
+          in: query
+          description: Filter by runner's BIB number
+          schema:
+            type: string
+
+  /manual-payments/upload-slip:
+    post:
+      description: |
+        Uploads a new payment slip for a pending manual payment.
+        This endpoint is useful when a payment was rejected and the user needs to upload a new payment slip.
+        If an existing payment slip exists, it will be replaced with the new one.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                payment_slip:
+                  type: string
+                  format: binary
+                  description: The payment slip image file (JPEG, PNG, PDF)
+
+  /admin/manual-payments/{id}/approve:
+    put:
+      description: |
+        Approves a manual payment. When a payment is approved:
+        1. The payment status changes to 'approved'
+        2. A UserPackage record is created or updated
+        3. The user's package_id is updated
+        4. If a shirt size was specified, the user profile is updated
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the manual payment to approve
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Optional notes about the approval
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+                  description: Optional approval notes
+                  example: "Payment approved"

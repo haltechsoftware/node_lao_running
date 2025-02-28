@@ -4,6 +4,9 @@ import "dotenv/config";
 import createError from "http-errors";
 import Response from "./app/helpers/response.helper";
 import Message from "./app/helpers/message.helper";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./app/config/swagger.js";
+
 const { ValidationError } = require("express-validation");
 const app = express();
 
@@ -27,6 +30,17 @@ app.use(express.json());
 app.use(
   express.urlencoded({
     extended: true,
+  }),
+);
+
+// Setup Swagger UI
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    explorer: true,
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "Lao Running API Documentation",
   }),
 );
 
@@ -90,4 +104,5 @@ app.use((error, req, res) => {
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
+  console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
 });
