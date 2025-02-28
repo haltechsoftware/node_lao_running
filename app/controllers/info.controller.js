@@ -279,6 +279,10 @@ exports.findAllRanking = async (req, res, next) => {
       },
       {
         model: db.UserPackage,
+        required: true,
+        where: {
+          status: "success",
+        },
         include: {
           model: db.Package,
         },
