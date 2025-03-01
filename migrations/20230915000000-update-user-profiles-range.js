@@ -10,8 +10,8 @@ module.exports = {
 
   down: async (queryInterface, Sequelize) => {
     // Revert back to original enum values
-    await queryInterface.sequelize.query(
-      "ALTER TABLE `user_profiles` MODIFY COLUMN `range` ENUM('free', '15', '42', '100', '200')",
-    );
+    // await queryInterface.sequelize.query(
+    //   "ALTER TABLE `user_profiles` MODIFY COLUMN `range` ENUM('free', '15', '42', '100', '200')",
+    // );
   },
 };
