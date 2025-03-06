@@ -214,11 +214,39 @@ exports.findAllAdmin = async (req, res, next) => {
     const per_page = Number.parseInt(req.query.per_page);
     let page = Number.parseInt(req.query.page);
     const status = req.query.status;
-    const condition = status
-      ? {
-          status: status,
-        }
-      : {};
+    const search = req.query.search;
+
+    // Base condition for status filter
+    let condition = status ? { status: status } : {};
+
+    // Setup include options with potential search query
+    const includeOptions = {
+      model: db.User,
+      include: {
+        model: db.UserProfile,
+      },
+    };
+
+    // Add search functionality if search parameter exists
+    if (search) {
+      includeOptions.where = {
+        [db.Sequelize.Op.or]: [
+          { name: { [db.Sequelize.Op.like]: `%${search}%` } },
+          { email: { [db.Sequelize.Op.like]: `%${search}%` } },
+          { phone: { [db.Sequelize.Op.like]: `%${search}%` } },
+        ],
+      };
+
+      // Also search in UserProfile through nested include
+      includeOptions.include.where = {
+        [db.Sequelize.Op.or]: [
+          { name: { [db.Sequelize.Op.like]: `%${search}%` } },
+          { surname: { [db.Sequelize.Op.like]: `%${search}%` } },
+          { bib: { [db.Sequelize.Op.like]: `%${search}%` } },
+        ],
+      };
+    }
+
     const attribute = [
       "id",
       "user_id",
@@ -239,15 +267,11 @@ exports.findAllAdmin = async (req, res, next) => {
       const runResult = await db.RunResult.findAndCountAll({
         where: condition,
         attributes: attribute,
-        include: {
-          model: db.User,
-          include: {
-            model: db.UserProfile,
-          },
-        },
+        include: includeOptions,
         limit: per_page,
         offset: (page - 1) * per_page,
         subQuery: false,
+        distinct: true, // Important for correct count when using includes
       });
 
       runResultData.data = runResult.rows;
@@ -260,12 +284,17 @@ exports.findAllAdmin = async (req, res, next) => {
       return Response.success(res, Message.success._success, runResultData);
     }
 
-    const runResult = await req.auth.getRunResults({
+    // Fix the non-paginated version to use direct query instead of association
+    const runResult = await db.RunResult.findAll({
       where: condition,
       attributes: attribute,
+      include: includeOptions,
+      order: [["createdAt", "DESC"]],
     });
+
     return Response.success(res, Message.success._success, runResult);
   } catch (error) {
+    console.error("Error in findAllAdmin:", error);
     next(error);
   }
 };
