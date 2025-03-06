@@ -16,7 +16,7 @@ import { Op } from "sequelize";
  * @returns \app\helpers\response.helper
  */
 exports.create = async (req, res, next) => {
-  const transaction = await transaction();
+  const transaction = db.sequelize.transaction();
   try {
     const valid = await RunResultValid.create(req.body);
     if (Object.keys(valid).length) {
@@ -142,7 +142,7 @@ exports.findOne = async (req, res, next) => {
 
 // Update a RunResult by the id in the request
 exports.update = async (req, res, next) => {
-  const transaction = await transaction();
+  const transaction = db.sequelize.transaction();
   try {
     const runResult = await db.RunResult.findByPk(req.params.id);
     const previousStatus = runResult.status;
