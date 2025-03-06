@@ -5,6 +5,7 @@ import Message from "../helpers/message.helper";
 import createError from "http-errors";
 import Image from "../helpers/upload.helper";
 import RunResultValid from "../validations/run_result.validation";
+import { Op } from "sequelize";
 
 /**
  * Create run result
@@ -15,7 +16,7 @@ import RunResultValid from "../validations/run_result.validation";
  * @returns \app\helpers\response.helper
  */
 exports.create = async (req, res, next) => {
-  const transaction = await db.sequelize.transaction();
+  const transaction = await transaction();
   try {
     const valid = await RunResultValid.create(req.body);
     if (Object.keys(valid).length) {
@@ -141,7 +142,7 @@ exports.findOne = async (req, res, next) => {
 
 // Update a RunResult by the id in the request
 exports.update = async (req, res, next) => {
-  const transaction = await db.sequelize.transaction();
+  const transaction = await transaction();
   try {
     const runResult = await db.RunResult.findByPk(req.params.id);
     const previousStatus = runResult.status;
@@ -230,19 +231,19 @@ exports.findAllAdmin = async (req, res, next) => {
     // Add search functionality if search parameter exists
     if (search) {
       includeOptions.where = {
-        [db.Sequelize.Op.or]: [
-          { name: { [db.Sequelize.Op.like]: `%${search}%` } },
-          { email: { [db.Sequelize.Op.like]: `%${search}%` } },
-          { phone: { [db.Sequelize.Op.like]: `%${search}%` } },
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { email: { [Op.like]: `%${search}%` } },
+          { phone: { [Op.like]: `%${search}%` } },
         ],
       };
 
       // Also search in UserProfile through nested include
       includeOptions.include.where = {
-        [db.Sequelize.Op.or]: [
-          { name: { [db.Sequelize.Op.like]: `%${search}%` } },
-          { surname: { [db.Sequelize.Op.like]: `%${search}%` } },
-          { bib: { [db.Sequelize.Op.like]: `%${search}%` } },
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { surname: { [Op.like]: `%${search}%` } },
+          { bib: { [Op.like]: `%${search}%` } },
         ],
       };
     }
