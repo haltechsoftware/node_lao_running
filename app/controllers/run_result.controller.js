@@ -16,13 +16,14 @@ import { Op } from "sequelize";
  * @returns \app\helpers\response.helper
  */
 exports.create = async (req, res, next) => {
-  const transaction = db.sequelize.transaction();
+  let transaction;
   try {
+    // Properly initialize the transaction
+    transaction = await db.sequelize.transaction();
+
     const valid = await RunResultValid.create(req.body);
     if (Object.keys(valid).length) {
-      if (!transaction.finished) {
-        await transaction.rollback();
-      }
+      await transaction.rollback();
       return res.status(Status.code.Validation).json(valid);
     }
 
@@ -50,9 +51,7 @@ exports.create = async (req, res, next) => {
       runResult,
     });
   } catch (error) {
-    if (!transaction.finished) {
-      await transaction.rollback();
-    }
+    if (transaction) await transaction.rollback();
     next(error);
   }
 };
@@ -142,8 +141,11 @@ exports.findOne = async (req, res, next) => {
 
 // Update a RunResult by the id in the request
 exports.update = async (req, res, next) => {
-  const transaction = db.sequelize.transaction();
+  let transaction;
   try {
+    // Properly initialize the transaction
+    transaction = await db.sequelize.transaction();
+
     const runResult = await db.RunResult.findByPk(req.params.id);
     const previousStatus = runResult.status;
     runResult.status = req.body.status;
@@ -188,9 +190,7 @@ exports.update = async (req, res, next) => {
 
     return Response.success(res, Message.success._success, runResult);
   } catch (error) {
-    if (!transaction.finished) {
-      await transaction.rollback();
-    }
+    if (transaction) await transaction.rollback();
     next(error);
   }
 };
